@@ -1,1 +1,2 @@
-# jfrog-cli-plugins
+# JFrog CLI Plugins
+JFrog CLI Plugins allow enhancing the functionality of [JFrog CLI](https://www.jfrog.com/confluence/display/CLI/JFrog+CLI) to suit user-specific or organization needs. The source code of a plugin is maintained as an open source Go project on GitHub. This repository was created to host the source code of some of the JFrog CLI Plugins created by JFrog. All public plugins, including the ones in this repository, are registered in [JFrog CLI's Plugins Registry](https://github.com/jfrog/jfrog-cli-plugins-reg), which makes them available for installation with JFrog CLI.
