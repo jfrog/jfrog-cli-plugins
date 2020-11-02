@@ -95,10 +95,13 @@ github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 h1:BQSFePA1RWJOl
 github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99/go.mod h1:1lJo3i6rXxKeerYnT8Nvf0QmHCRC1n8sfWVwXF2Frvo=
 github.com/jfrog/gocmd v0.1.15/go.mod h1:yknNw8ubW0y8lIZIZlpX0/tQvxocDPV262O31rPcpsM=
 github.com/jfrog/gocmd v0.1.16/go.mod h1:nuAiQWvFxNthGoe0Ev+e6SrKNrmrYUT1sOGkkYrKZI4=
+github.com/jfrog/gocmd v0.1.17/go.mod h1:O8mGn5+aEC3ru2NzyTkZ0a6hL5EIai4NNjYNzyFz/4A=
 github.com/jfrog/gofrog v1.0.6 h1:yUDxSCw8gTK6vC4PvtG0HTnEOQJSZ+O4lWGCgkev1nU=
 github.com/jfrog/gofrog v1.0.6/go.mod h1:HkDzg+tMNw23UryoOv0+LB94BzYcl6MCIoz8Tmlb+s8=
 github.com/jfrog/jfrog-cli-core v0.1.1-0.20200924072840-fb1c693ea103 h1:CtMjiVm6+aw+G/VTqz2QNrfB9qBajWeA6PKFstfqwyU=
 github.com/jfrog/jfrog-cli-core v0.1.1-0.20200924072840-fb1c693ea103/go.mod h1:Hihi5JF4tCttJWWwvAwfpHVAyEK2AO8lSOQ80BDZXC4=
+github.com/jfrog/jfrog-cli-core v1.1.0 h1:FA1Z63FuWdwT0bg4NoGP2Qh0nSx8LD8CFdzy8WpgwJo=
+github.com/jfrog/jfrog-cli-core v1.1.0/go.mod h1:zKXkCzmNpdyTo2+nIqTU61i719JVFydijSqYCUHlrW8=
 github.com/jfrog/jfrog-client-go v0.10.0/go.mod h1:rKxpmcVmqPhhiFLxftmuhrf/scgVNNHQ8Y9pSrc2vBo=
 github.com/jfrog/jfrog-client-go v0.13.1 h1:kY0VS+IkG/chQNiPXGbUGZUOVzbr5O0DgPy7cZK5+DQ=
 github.com/jfrog/jfrog-client-go v0.13.1/go.mod h1:Av1I4oFHu+frbD+xqZV4fdAp3Kpt43uFfBnV6Hag+t8=
@@ -108,6 +111,8 @@ github.com/jfrog/jfrog-client-go v0.14.0 h1:hPRnAwNA68Z81sRiAWUI8PkIC78NWzSoUzNJ
 github.com/jfrog/jfrog-client-go v0.14.0/go.mod h1:yjBR3LThf5UXnXWT75QpYJzy+Op7mlwDdK0ETBk1q0w=
 github.com/jfrog/jfrog-client-go v0.14.1-0.20200924070338-796778dbbcde h1:UNAKuHxSlayklVjw1eLjIpcf7QYdBiBDpBCz9K1JnLE=
 github.com/jfrog/jfrog-client-go v0.14.1-0.20200924070338-796778dbbcde/go.mod h1:yjBR3LThf5UXnXWT75QpYJzy+Op7mlwDdK0ETBk1q0w=
+github.com/jfrog/jfrog-client-go v0.15.0 h1:EnzskQgZB517J90ppailVbKBGUwJZi6ABagPylMM2YY=
+github.com/jfrog/jfrog-client-go v0.15.0/go.mod h1:v365V7GVxhzgrirZAxg81bZB+PQZMOKrHLXkon6vKp4=
 github.com/json-iterator/go v1.1.6/go.mod h1:+SdeFBvtyEkXs7REEP0seUULqWtbJapLOCVDaaPEHmU=
 github.com/json-iterator/go v1.1.10/go.mod h1:KdQUCv79m/52Kvf8AW2vK1V8akMuk1QjK/uOdHXbAo4=
 github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e h1:RgQk53JHp/Cjunrr1WlsXSZpqXn+uREuHvUVcK82CV8=
@@ -224,6 +229,8 @@ golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3/go.mod h1:t9HGtf8HONx5eT2rtn
 golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e/go.mod h1:qpuaurCH72eLCgpAm/N6yyVIVM9cpaDIP3A8BGJEC5A=
 golang.org/x/net v0.0.0-20200707034311-ab3426394381 h1:VXak5I6aEWmAXeQjA+QSZzlgNrpq9mjcfDemuexIKsU=
 golang.org/x/net v0.0.0-20200707034311-ab3426394381/go.mod h1:/O7V0waA8r7cgGh81Ro3o1hOxt32SMVPicZroKQ2sZA=
+golang.org/x/net v0.0.0-20201010224723-4f7140c49acb h1:mUVeFHoDKis5nxCAzoAi7E8Ghb86EXh/RK6wtvJIqRY=
+golang.org/x/net v0.0.0-20201010224723-4f7140c49acb/go.mod h1:sp8m0HH+o8qH0wwXwYZr8TS3Oi6o0r6Gce1SSxlDquU=
 golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
 golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.0.0-20181108010431-42b317875d0f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
@@ -245,6 +252,8 @@ golang.org/x/sys v0.0.0-20200223170610-d5e6a3e2c0ae/go.mod h1:h1NjWce9XRLGQEsW7w
 golang.org/x/sys v0.0.0-20200323222414-85ca7c5b95cd/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20200622214017-ed371f2e16b4 h1:5/PjkGUjvEU5Gl6BxmvKRPpqo2uNMv4rcHBMwzk/st8=
 golang.org/x/sys v0.0.0-20200622214017-ed371f2e16b4/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f h1:+Nyd8tzPX9R7BWHguqsrbFdRx3WQ/1ib8I44HXV5yTA=
+golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
 golang.org/x/text v0.3.3 h1:cokOdA+Jmi5PJGXLlLllQSgYigAEfHXJAERHVMaCc2k=
 golang.org/x/text v0.3.3/go.mod h1:5Zoc/QRtKVWzQhOtBMvqHzDpF6irO9z98xDceosuGiQ=
