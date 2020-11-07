@@ -15,7 +15,7 @@ import (
 	commandsutils "github.com/jfrog/jfrog-cli-core/artifactory/commands/utils"
 )
 
-func GetRtLsCommand() components.Command {
+func GetLsCommand() components.Command {
 	return components.Command{
 		Name:        "ls",
 		Description: "Run ls.",
@@ -32,16 +32,16 @@ func getLsArguments() []components.Argument {
 	return []components.Argument{
 		{
 			Name:        "path",
-			Description: "[Mandatory] Path in Artifactory. ` `",
+			Description: "[Mandatory] Path in Artifactory.",
 		},
 	}
 }
 
 func getLsFlags() []components.Flag {
 	return []components.Flag{
-		components.BoolFlag{
+		components.StringFlag{
 			Name:        "server-id",
-			Description: "[Optional] Artifactory server ID configured using the config command.` `",
+			Description: "Artifactory server ID configured using the config command.",
 		},
 	}
 }
@@ -139,5 +139,5 @@ func processSearchResults(pattern string, searchResults *commandsutils.Result) (
 		}
 		result = new(utils.SearchResult)
 	}
-	return allResults, maxPathLength, reader.GetError()
+	return allResults, maxPathLength + 1, reader.GetError()
 }

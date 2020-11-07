@@ -42,10 +42,9 @@ func getRtDetails(c *components.Context) (*config.ArtifactoryDetails, error) {
 	return details, nil
 }
 
-/* Set the log level to ERROR to avoid the following outputs:
-* [Info] Searching artifacts...
-* [Info] Found 1 artifact.
- */
+// Set the log level to ERROR to avoid the following outputs:
+// [Info] Searching artifacts...
+// [Info] Found 1 artifact.
 func increaseLogLevel() {
 	if log.GetCliLogLevel() == clientlog.INFO {
 		clientlog.SetLogger(clientlog.NewLogger(clientlog.ERROR, nil))

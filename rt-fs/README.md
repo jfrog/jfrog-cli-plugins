@@ -19,11 +19,11 @@ Uninstalling a plugin
 ## Usage
 ### Commands
 * ls
-    - arguments:
+    - Arguments:
         - path - Path in Artifactory.
-    - flags:
+    - Flags:
         - server-id: Artifactory server ID configured using the config command **[Optional]**
-    - example:
+    - Example:
     ```
   $ jfrog rt-fs ls generic-local/
   file_name1.zip   file_name2.zip   file_name3.zip
