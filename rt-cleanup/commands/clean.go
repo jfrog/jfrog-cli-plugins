@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/jfrog/jfrog-cli-core/artifactory/commands"
 	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
@@ -14,10 +13,6 @@ import (
 	searchutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
 	clientutils "github.com/jfrog/jfrog-client-go/utils"
 )
-
-//timeUnit: The unit of the time interval. year, month, day, hour or minute are allowed values. Default month.
-//timeInterval: The time interval to look back before deleting an artifact. Default 1.
-// Deletes all artifacts that have not been downloaded for the past n time units.
 
 func GetCleanCommand() components.Command {
 	return components.Command{
@@ -32,6 +27,7 @@ func GetCleanCommand() components.Command {
 		},
 	}
 }
+
 func getCleanArguments() []components.Argument {
 	return []components.Argument{
 		{
@@ -45,7 +41,7 @@ func getCleanFlags() []components.Flag {
 	return []components.Flag{
 		components.StringFlag{
 			Name:         "timeUnit",
-			Description:  "The time unit of the maximal time. year, month, day are allowed values. Default month.",
+			Description:  "The time unit of the maximal time. year, month, day are allowed values.",
 			DefaultValue: "month",
 		},
 		components.StringFlag{
@@ -55,7 +51,7 @@ func getCleanFlags() []components.Flag {
 		},
 		components.StringFlag{
 			Name:         "maximalSize",
-			Description:  "Artifacts that are smaller than maximalSize MB will not be deleted. Default 0",
+			Description:  "Artifacts that are smaller than maximalSize (bytes) will not be deleted.",
 			DefaultValue: "0",
 		},
 	}
@@ -84,7 +80,7 @@ func cleanCmd(c *components.Context) error {
 		return err
 	}
 	conf.maximalTime = maximalTime
-	conf.maximalSize = c.GetStringFlagValue("maximalSize") + "000000"
+	conf.maximalSize = c.GetStringFlagValue("maximalSize")
 	rtDetails, err := getRtDetails(c)
 	if err != nil {
 		return err
@@ -92,29 +88,27 @@ func cleanCmd(c *components.Context) error {
 	return cleanArtifcats(conf, rtDetails)
 }
 
-func cleanArtifcats(c *cleanConfiguration, artifactoryDetails *config.ArtifactoryDetails) error {
-	serviceManager, err := utils.CreateServiceManager(artifactoryDetails, false)
-	if err != nil {
-		return err
-	}
-	// resultStream, err := serviceManager.Aql(aqlQuery)
-	//	defer resultStream.Close()
-
-	aqlQuery := buildAQL(c)
+func cleanArtifcats(config *cleanConfiguration, artifactoryDetails *config.ArtifactoryDetails) error {
+	// Search for artifacts to delete using AQL
+	aqlQuery := buildAQL(config)
 	authConfig, err := artifactoryDetails.CreateArtAuthConfig()
 	if err != nil {
 		return err
 	}
-	conf := new(searchutils.CommonConfImpl)
-	conf.SetArtifactoryDetails(authConfig)
-	conf.DryRun = false
-	resultReader, err := searchutils.ExecAqlSaveToFile(aqlQuery, conf)
+	rtConf := new(searchutils.CommonConfImpl)
+	rtConf.SetArtifactoryDetails(authConfig)
+	resultReader, err := searchutils.ExecAqlSaveToFile(aqlQuery, rtConf)
 	if err != nil {
 		return err
 	}
 	defer resultReader.Close()
-	_, err = serviceManager.DeleteFiles(resultReader)
 
+	// Delete the artifacts we found
+	serviceManager, err := utils.CreateServiceManager(artifactoryDetails, false)
+	if err != nil {
+		return err
+	}
+	_, err = serviceManager.DeleteFiles(resultReader)
 	return err
 }
 
@@ -133,49 +127,19 @@ func buildAQL(c *cleanConfiguration) (aqlQuery string) {
 		`]` +
 		`})`
 
-	aqlQuery = fmt.Sprintf(aqlQuery, c.repository, c.maximalSize, c.maximalTime)
-	return
+	return fmt.Sprintf(aqlQuery, c.repository, c.maximalSize, c.maximalTime)
 }
 
-// func deleteArtifacts() (err error) {
-// 	result, err := ioutil.ReadAll(resultStream)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	parsedResult := new(aqlResult)
-// 	if err = json.Unmarshal(result, parsedResult); err != nil {
-// 		return errorutils.CheckError(err)
-// 	}
-// 	for _, file := range parsedResult.Results {
-// 		log.Output(file.Path)
-// 	}
-// }
-
-func parseTimeFlagsToTime(maximalTime, timeUnit string) (maimalDate time.Time, err error) {
-	now := time.Now()
-	timeValue, err := strconv.Atoi(maximalTime)
-	if err != nil {
-		return
-	}
-	switch timeUnit = strings.ToLower(strings.TrimSpace(timeUnit)); timeUnit {
-	case "year":
-		return now.AddDate(-timeValue, 0, 0), nil
-
-	case "month":
-		return now.AddDate(0, -timeValue, 0), nil
-
-	case "day":
-		return now.AddDate(0, 0, -timeValue), nil
-	}
-	return time.Now(), errors.New("Wrong timeUnit arguments. Expected: year, month or day. Received: " + timeUnit)
-
-}
+// given the 2 inputs: timeUnit and time returns a string represents this time interval.
+// For example: 1, month => 1mo
 func parseTimeFlags(maximalTime, timeUnit string) (timeString string, err error) {
+	// Validate maximalTime
 	timeValue, err := strconv.Atoi(maximalTime)
 	if err != nil {
 		return
 	}
 	timeString = strconv.Itoa(timeValue)
+
 	switch timeUnit = strings.ToLower(strings.TrimSpace(timeUnit)); timeUnit {
 	case "year":
 		return timeString + "y", nil
@@ -206,13 +170,4 @@ func getRtDetails(c *components.Context) (*config.ArtifactoryDetails, error) {
 		return nil, err
 	}
 	return details, nil
-}
-
-type aqlResult struct {
-	Results []*results `json:"results,omitempty"`
-}
-
-type results struct {
-	Name string `json:"name,omitempty"`
-	Path string `json:"path,omitempty"`
 }
