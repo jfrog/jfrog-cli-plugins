@@ -1,0 +1,34 @@
+{
+  "results": [
+    {
+      "path": "libs-release-local/org/jfrog/example/gradle/services",
+      "type": "folder",
+      "created": "2020-08-19T05:40:12.548Z",
+      "modified": "2020-08-19T05:40:12.548Z"
+    },
+    {
+      "path": "libs-release-local/org/jfrog/example/gradle/shared",
+      "type": "folder",
+      "created": "2020-08-19T05:40:12.714Z",
+      "modified": "2020-08-19T05:40:12.714Z"
+    },
+    {
+      "path": "libs-release-local/org/jfrog/example/gradle/api",
+      "type": "folder",
+      "created": "2020-08-19T05:40:04.607Z",
+      "modified": "2020-08-19T05:40:04.607Z"
+    },
+    {
+      "path": "libs-release-local/org/jfrog/example/gradle/webservice",
+      "type": "folder",
+      "created": "2020-08-19T05:40:04.892Z",
+      "modified": "2020-08-19T05:40:04.892Z"
+    },
+    {
+      "path": "libs-release-local/org/jfrog/example/gradle/gradle-example-ci-server",
+      "type": "folder",
+      "created": "2020-08-19T05:40:05.161Z",
+      "modified": "2020-08-19T05:40:05.161Z"
+    }
+  ]
+}

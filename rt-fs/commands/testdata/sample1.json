@@ -1,0 +1,25 @@
+{
+  "results": [
+    {
+      "path": "libs-release-local/",
+      "type": "folder",
+      "created": "2016-09-05T08:56:47.181Z",
+      "modified": "2016-09-05T08:56:47.181Z"
+    },
+    {
+      "path": "libs-release-local/org",
+      "type": "folder",
+      "created": "2020-08-19T05:40:04.075Z",
+      "modified": "2020-08-19T05:40:04.075Z"
+    },
+    {
+      "path": "libs-release-local/.nupkg",
+      "type": "file",
+      "size": 3,
+      "created": "2020-08-24T07:59:57.521Z",
+      "modified": "2020-08-24T07:59:57.363Z",
+      "sha1": "55ca6286e3e4f4fba5d0448333fa99fc5a404a73",
+      "md5": "764efa883dda1e11db47671c4a3bbd9e"
+    }
+  ]
+}
