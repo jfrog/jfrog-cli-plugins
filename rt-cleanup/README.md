@@ -1,42 +1,46 @@
-# hello-frog
+# rt-cleanup
 
 ## About this plugin
-This plugin is a template and a functioning example for a basic JFrog CLI plugin. 
-This README shows the expected structure of your plugin's README.
+This plugin is a simple Artifactory cleanup plugin.
+It can be used to delete all artifacts that have not been downloaded for the past n time units (both can bu configured)
+from a given repository.
 
 ## Installation with JFrog CLI
 Installing the latest version:
 
-`$ jfrog plugin install hello-frog`
+`$ jfrog plugin install rt-cleanup`
 
 Installing a specific version:
 
-`$ jfrog plugin install hello-frog@version`
+`$ jfrog plugin install rt-cleanup@version`
 
 Uninstalling a plugin
 
-`$ jfrog plugin uninstall hello-frog`
+`$ jfrog plugin uninstall rt-cleanup`
 
 ## Usage
 ### Commands
-* hello
-    - arguments:
-        - addressee - The name of the person you would like to greet.
-    - flags:
-        - shout: Makes output uppercase **[Default: false]**
-        - repeat: Greets multiple times **[Default: 1]**
-    - example:
+* clean 
+    - Arguments:
+        - repository - The name of the repository you would like to clean.
+    - Flags:
+        - timeUnit: The time unit of the maximal time. year, month, day are allowed values. **[Default: month]**
+        - maximalTime: Artifacts that have not been downloaded for the past maximalTime will be deleted. **[Default: 1]**
+        - maximalSize: Artifacts that are smaller than maximalSize (bytes) will not be deleted. **[Default: 0]**
+    - Examples:
     ```
-  $ jfrog hello-frog hello world --shout --repeat=2
-  NEW GREETING: HELLO WORLD!
-  NEW GREETING: HELLO WORLD!
-  ```
+  $ jfrog rt-cleanup clean example-repo-local --timeUnit=day --maximalTime=3 --maximalSize=1000000
+
+    Will delate all files that haven't been downloaded in the past 3 days and have size bigger than 1000000 bytes
+    from the example-repo-local repository.
+    ```
 
 ### Environment variables
-* HELLO_FROG_GREET_PREFIX - Adds a prefix to every greet **[Default: New greeting: ]**
+None.
 
 ## Additional info
 None.
 
 ## Release Notes
 The release notes are available [here](RELEASE.md).
+
