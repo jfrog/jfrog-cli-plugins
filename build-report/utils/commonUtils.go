@@ -1,4 +1,4 @@
-package commands
+package utils
 
 import (
 	"errors"
@@ -14,9 +14,11 @@ import (
 	"os"
 )
 
+const ServerIdFlag = "server-id"
+
 // Returns the Artifactory Details of the provided server-id, or the default one.
-func getRtDetails(c *components.Context) (*config.ArtifactoryDetails, error) {
-	serverId := c.GetStringFlagValue(serverIdFlag)
+func GetRtDetails(c *components.Context) (*config.ArtifactoryDetails, error) {
+	serverId := c.GetStringFlagValue(ServerIdFlag)
 	details, err := commands.GetConfig(serverId, false)
 	if err != nil {
 		return nil, err
@@ -33,7 +35,7 @@ func getRtDetails(c *components.Context) (*config.ArtifactoryDetails, error) {
 }
 
 // Returns the build details that were provided by arguments or environment variables.
-func getBuildDetails(c *components.Context) (buildName, buildNumber string, err error) {
+func GetBuildDetails(c *components.Context) (buildName, buildNumber string, err error) {
 	if len(c.Arguments) == 2 {
 		return c.Arguments[0], c.Arguments[1], nil
 	}
@@ -46,7 +48,7 @@ func getBuildDetails(c *components.Context) (buildName, buildNumber string, err 
 }
 
 // Get build info from Artifactory.
-func getBuildInfo(rtDetails *config.ArtifactoryDetails, buildName, buildNumber string) (*buildinfo.PublishedBuildInfo, error) {
+func GetBuildInfo(rtDetails *config.ArtifactoryDetails, buildName, buildNumber string) (*buildinfo.PublishedBuildInfo, error) {
 	servicesManager, err := utils.CreateServiceManager(rtDetails, false)
 	if err != nil {
 		return nil, err
@@ -55,7 +57,7 @@ func getBuildInfo(rtDetails *config.ArtifactoryDetails, buildName, buildNumber s
 	return servicesManager.GetBuildInfo(buildInfoParams)
 }
 
-func renderWithDefaults(t table.Writer) {
+func RenderWithDefaults(t table.Writer) {
 	t.SetOutputMirror(os.Stdout)
 	t.SetStyle(table.StyleLight)
 	t.Style().Options.SeparateRows = true

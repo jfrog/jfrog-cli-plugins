@@ -14,7 +14,7 @@ func getApp() components.App {
 	app := components.App{}
 	app.Name = "build-report"
 	app.Description = "Print a report of a published build info in Artifactory to terminal"
-	app.Version = "v0.1.0"
+	app.Version = "v1.0.0"
 	app.Commands = getCommands()
 	return app
 }

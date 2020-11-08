@@ -1,4 +1,4 @@
-package commands
+package utils
 
 import (
 	"encoding/json"
@@ -14,7 +14,7 @@ import (
 )
 
 // Get builds diff from Artifactory.
-func getDiff(rtDetails *config.ArtifactoryDetails, buildName, buildNumber, buildNumberDiff string) (*BuildDiff, error) {
+func GetBuildDiff(rtDetails *config.ArtifactoryDetails, buildName, buildNumber, buildNumberDiff string) (*BuildDiff, error) {
 	if buildNumberDiff == "" {
 		return nil, nil
 	}

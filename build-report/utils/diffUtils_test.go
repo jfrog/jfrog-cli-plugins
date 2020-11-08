@@ -1,9 +1,7 @@
-package commands
+package utils
 
 import (
 	"encoding/json"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/jfrog/jfrog-cli-plugins/build-report/testUtils"
 	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
@@ -12,7 +10,7 @@ import (
 )
 
 func TestBuildDiffStruct(t *testing.T) {
-	buildDiffJson, err := ioutil.ReadFile(filepath.Join("testdata", "diff.json"))
+	buildDiffJson, err := ioutil.ReadFile(filepath.Join("..", "testdata", "diff.json"))
 	if err != nil {
 		assert.NoError(t, err)
 		return
@@ -38,25 +36,4 @@ func TestBuildDiffStruct(t *testing.T) {
 
 	expectedRemovedDep := DependencyDiff{Module: "buildreport", DiffId: "spec"}
 	assert.Equal(t, buildDiff.Dependencies.Removed[0], expectedRemovedDep)
-}
-
-func TestModulesDiffTableHasConstantLength(t *testing.T) {
-	testUtils.LinesSameWidth = true
-
-	buildDiffJson, err := ioutil.ReadFile(filepath.Join("testdata", "diff.json"))
-	if err != nil {
-		assert.NoError(t, err)
-		return
-	}
-
-	var buildDiff BuildDiff
-	if err := json.Unmarshal(buildDiffJson, &buildDiff); err != nil {
-		assert.NoError(t, err)
-		return
-	}
-
-	tw := &testUtils.TableWrapper{Table: &table.Table{}}
-	fillModulesDiffTable(tw, &buildDiff)
-	assert.True(t, testUtils.LinesSameWidth)
-	testUtils.ClearWidth()
 }

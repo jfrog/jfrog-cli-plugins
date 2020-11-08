@@ -19,12 +19,12 @@ Uninstalling a plugin
 ## Usage
 ### Commands
 * view
-    - arguments:
+    - Arguments:
         - build-name - The name of the build you would like to print a report for.
         - build-number - The number of the build you would like to print a report for.
-    - flags:
+    - Flags:
         - diff - An older build number, to show the diff with the build number passed as an argument.  **[Optional]**
-    - example:
+    - Examples:
     
 `$ jfrog build-report view build-example 2`
 
