@@ -2,8 +2,6 @@ package utils
 
 import (
 	"errors"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/jfrog/jfrog-cli-core/artifactory/commands"
 	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
@@ -11,7 +9,6 @@ import (
 	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	"github.com/jfrog/jfrog-client-go/artifactory/services"
 	clientutils "github.com/jfrog/jfrog-client-go/utils"
-	"os"
 )
 
 const ServerIdFlag = "server-id"
@@ -55,12 +52,4 @@ func GetBuildInfo(rtDetails *config.ArtifactoryDetails, buildName, buildNumber s
 	}
 	buildInfoParams := services.BuildInfoParams{BuildName: buildName, BuildNumber: buildNumber}
 	return servicesManager.GetBuildInfo(buildInfoParams)
-}
-
-func RenderWithDefaults(t table.Writer) {
-	t.SetOutputMirror(os.Stdout)
-	t.SetStyle(table.StyleLight)
-	t.Style().Options.SeparateRows = true
-	t.Style().Title.Align = text.AlignCenter
-	t.Render()
 }

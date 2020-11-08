@@ -24,7 +24,7 @@ func TestBuildDetailsTableHasConstantLength(t *testing.T) {
 	}
 
 	tw := &tests.TableWrapper{Table: &table.Table{}}
-	fillBuildDetailsTable(tw, buildInfo, "http://localhost:8082/artifactory/api/build/build-example/2")
+	fillBuildDetailsTable(tw, buildInfo)
 	assert.True(t, tests.LinesSameWidth)
 	tests.ClearWidth()
 }

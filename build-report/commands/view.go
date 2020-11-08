@@ -9,6 +9,9 @@ import (
 	"github.com/jfrog/jfrog-cli-core/utils/coreutils"
 	"github.com/jfrog/jfrog-cli-plugins/build-report/utils"
 	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
+	"github.com/jfrog/jfrog-client-go/utils/log"
+	"golang.org/x/crypto/ssh/terminal"
+	"os"
 	"strconv"
 )
 
@@ -29,6 +32,7 @@ func GetViewCommand() components.Command {
 const buildNameArgument = "build-name"
 const buildNumberArgument = "build-number"
 const diffFlag = "diff"
+const defaultRowLengthLimit = 200
 
 func getViewArguments() []components.Argument {
 	return []components.Argument{
@@ -133,15 +137,15 @@ func doView(rtDetails *config.ArtifactoryDetails, buildName, buildNumber, buildN
 func printBuildDetailsTable(publishedBuildInfo *buildinfo.PublishedBuildInfo) {
 	t := table.NewWriter()
 	t.SetTitle("Build Details")
-	fillBuildDetailsTable(t, publishedBuildInfo.BuildInfo, publishedBuildInfo.Uri)
-	utils.RenderWithDefaults(t)
+	fillBuildDetailsTable(t, publishedBuildInfo.BuildInfo)
+	renderWithDefaults(t)
 }
 
-func fillBuildDetailsTable(t table.Writer, buildInfo buildinfo.BuildInfo, buildUri string) {
+func fillBuildDetailsTable(t table.Writer, buildInfo buildinfo.BuildInfo) {
 	// Repeating Agents in the first header will be merged as one cell above their name/version.
-	t.AppendHeader(table.Row{"Name", "Number", "Started", "Uri", "Artifactory Principal", "Agent", "Agent", "Build Agent", "Build Agent"}, table.RowConfig{AutoMerge: true})
-	t.AppendHeader(table.Row{"", "", "", "", "", "Name", "Version", "Name", "Version"})
-	t.AppendRow(table.Row{buildInfo.Name, buildInfo.Number, buildInfo.Started, buildUri, buildInfo.ArtifactoryPrincipal,
+	t.AppendHeader(table.Row{"Name", "Number", "Started", "Artifactory Principal", "Agent", "Agent", "Build Agent", "Build Agent"}, table.RowConfig{AutoMerge: true})
+	t.AppendHeader(table.Row{"", "", "", "", "Name", "Version", "Name", "Version"})
+	t.AppendRow(table.Row{buildInfo.Name, buildInfo.Number, buildInfo.Started, buildInfo.ArtifactoryPrincipal,
 		buildInfo.Agent.Name, buildInfo.Agent.Version, buildInfo.BuildAgent.Name, buildInfo.BuildAgent.Version})
 }
 
@@ -156,7 +160,7 @@ func printBuildModulesTable(modules []buildinfo.Module) {
 		{Number: 1, AutoMerge: true},
 		{Number: 2, AutoMerge: true},
 	})
-	utils.RenderWithDefaults(t)
+	renderWithDefaults(t)
 }
 
 func fillBuildModulesTable(t table.Writer, modules []buildinfo.Module) {
@@ -190,21 +194,25 @@ func printModulesDiffTable(diff *utils.BuildDiff) {
 	t.SortBy([]table.SortBy{{Name: "Module", Mode: table.Asc},
 		{Name: "Art/Dep", Mode: table.Asc}})
 
-	// Colors each line according to the change of the file.
-	t.SetRowPainter(func(row table.Row) text.Colors {
-		switch row[len(modulesDiffHeader)-1] {
-		case utils.New.String():
-			return text.Colors{text.FgGreen}
-		case utils.Unchanged.String():
-			return text.Colors{}
-		case utils.Updated.String():
-			return text.Colors{text.FgBlue}
-		case utils.Removed.String():
-			return text.Colors{text.FgRed}
-		}
-		return nil
-	})
-	utils.RenderWithDefaults(t)
+	// Color lines only if terminal.
+	if isTerminal() {
+		// Colors each line according to the change of the file.
+		t.SetRowPainter(func(row table.Row) text.Colors {
+			switch row[len(modulesDiffHeader)-1] {
+			case utils.New.String():
+				return text.Colors{text.FgGreen}
+			case utils.Unchanged.String():
+				return text.Colors{}
+			case utils.Updated.String():
+				return text.Colors{text.FgBlue}
+			case utils.Removed.String():
+				return text.Colors{text.FgRed}
+			}
+			return nil
+		})
+	}
+
+	renderWithDefaults(t)
 }
 
 func fillModulesDiffTable(t table.Writer, diff *utils.BuildDiff) {
@@ -259,4 +267,37 @@ func addFileRow(t table.Writer, f utils.FileDiff, change utils.Change) {
 
 func addRemovedFileRow(t table.Writer, f utils.FileDiff) {
 	t.AppendRow(table.Row{f.GetModuleId(), f.GetArtOrDep(), f.GetIdOrName(), f.GetDiffIdOrName(), "", "", "", utils.Removed.String()})
+}
+
+func renderWithDefaults(t table.Writer) {
+	t.SetOutputMirror(os.Stdout)
+	t.SetStyle(table.StyleLight)
+	t.Style().Options.SeparateRows = true
+	t.Style().Title.Align = text.AlignCenter
+	limitRowLength(t)
+	t.Render()
+}
+
+// Check if Stdout is a terminal
+func isTerminal() bool {
+	return terminal.IsTerminal(int(os.Stdout.Fd()))
+}
+
+// Setting the row limit according to terminal, or default if cannot detect.
+func limitRowLength(t table.Writer) {
+	if isTerminal() {
+		width, _, err := terminal.GetSize(int(os.Stdout.Fd()))
+		if err != nil {
+			log.Debug("Error when trying to get terminal width. Setting table limit to default. Error: ", err.Error())
+			t.SetAllowedRowLength(defaultRowLengthLimit)
+			return
+		}
+		// Avoid edges.
+		width -= 4
+		if width > 0 {
+			t.SetAllowedRowLength(width)
+			return
+		}
+	}
+	t.SetAllowedRowLength(defaultRowLengthLimit)
 }
