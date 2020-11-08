@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/jfrog/jfrog-cli-core/plugins"
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
-	"github.com/jfrog/jfrog-cli-plugin-template/commands"
+	"github.com/jfrog/jfrog-cli-plugin-template/rt-cleanup/commands"
 )
 
 func main() {
