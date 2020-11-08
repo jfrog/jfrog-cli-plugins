@@ -118,7 +118,7 @@ func buildAQL(c *cleanConfiguration) (aqlQuery string) {
 	aqlQuery = `items.find({` +
 		`"type":"file",` +
 		`"repo":%q,` +
-		`"size":{"$gt":%q},` +
+		`"size":{"$gte":%q},` +
 		`"$or": [` +
 		`{` +
 		`"stat.downloaded":{"$before":%q},` +
