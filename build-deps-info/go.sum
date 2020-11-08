@@ -84,6 +84,8 @@ github.com/jfrog/jfrog-cli-core v1.1.0 h1:FA1Z63FuWdwT0bg4NoGP2Qh0nSx8LD8CFdzy8W
 github.com/jfrog/jfrog-cli-core v1.1.0/go.mod h1:zKXkCzmNpdyTo2+nIqTU61i719JVFydijSqYCUHlrW8=
 github.com/jfrog/jfrog-client-go v0.15.0 h1:EnzskQgZB517J90ppailVbKBGUwJZi6ABagPylMM2YY=
 github.com/jfrog/jfrog-client-go v0.15.0/go.mod h1:v365V7GVxhzgrirZAxg81bZB+PQZMOKrHLXkon6vKp4=
+github.com/jfrog/jfrog-client-go v0.15.1-0.20201107091121-541aff77ddc4 h1:SyaBNL3P0WWIW/hh26uC2Tp/Xt85qCr6RTk3oTZYqGg=
+github.com/jfrog/jfrog-client-go v0.15.1-0.20201107091121-541aff77ddc4/go.mod h1:v365V7GVxhzgrirZAxg81bZB+PQZMOKrHLXkon6vKp4=
 github.com/jmespath/go-jmespath v0.4.0/go.mod h1:T8mJZnbsbmF+m6zOOFylbeCJqk5+pHWvzYPziyZiYoo=
 github.com/jmespath/go-jmespath/internal/testify v1.5.1/go.mod h1:L3OGu8Wl2/fWfCI6z80xFu9LTZmf1ZRjMHUOPmWr69U=
 github.com/joho/godotenv v1.3.0/go.mod h1:7hK45KPybAkOC6peb+G5yklZfMxEjkZhHbwpqxOKXbg=

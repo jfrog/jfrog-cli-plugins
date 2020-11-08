@@ -14,3 +14,5 @@ require (
 	github.com/spf13/pflag v1.0.3 // indirect
 	github.com/stretchr/testify v1.6.1
 )
+
+replace github.com/jfrog/jfrog-client-go => github.com/jfrog/jfrog-client-go v0.15.1-0.20201107091121-541aff77ddc4

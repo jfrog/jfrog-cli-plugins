@@ -8,13 +8,13 @@ import (
 	"github.com/jfrog/jfrog-cli-core/plugins"
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
 	"github.com/jfrog/jfrog-cli-core/utils/config"
-	"github.com/jfrog/jfrog-cli-plugins/build-deps-info/src/cmd/builddepsinfo"
+	builddepsinfo "github.com/jfrog/jfrog-cli-plugins/build-deps-info/commands"
 )
 
 func main() {
 	plugins.PluginMain(components.App{
 		Name:        "build-deps-info",
-		Description: "Show the dependencies build and vcs details of a specific build name & build number from Artifactory.",
+		Description: "Print the dependencies build and a link to vcs of a specific build name & build number in Artifactory.",
 		Version:     "v0.1.0",
 		Commands: []components.Command{
 			{

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jfrog/jfrog-cli-plugins/build-deps-info/commands/utils"
 	servicesutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
 	"github.com/jfrog/jfrog-client-go/utils/io/content"
 	"github.com/jfrog/jfrog-client-go/utils/log"
@@ -13,7 +14,6 @@ import (
 	"github.com/jfrog/gofrog/parallel"
 	"github.com/jfrog/jfrog-cli-core/artifactory/commands"
 	"github.com/jfrog/jfrog-cli-core/utils/config"
-	"github.com/jfrog/jfrog-cli-plugins/build-deps-info/src/cmd/utils"
 	"github.com/jfrog/jfrog-client-go/artifactory"
 	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	"github.com/jfrog/jfrog-client-go/artifactory/services"
@@ -69,6 +69,10 @@ func (p *BuildDepsInfo) Exec() error {
 	if err != nil {
 		return err
 	}
+	if buildinfo.Name == "" || buildinfo.Number == "" {
+
+		return errors.New("Build '" + p.buildName + "/" + p.buildNumber + "' not found")
+	}
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"#", "Dependency name", "BUILD", "vcs url"})
@@ -119,6 +123,9 @@ func getDependenciesDetails(bim []buildinfo.Module, repo string, sm artifactory.
 	if err != nil {
 		return
 	}
+	if reader == nil {
+
+	}
 	defer utils.Cleanup(reader.Close, &err)
 	// Update the dependencies build.
 	for currentResult := new(serviceutils.ResultItem); reader.NextRecord(currentResult) == nil; currentResult = new(serviceutils.ResultItem) {
@@ -134,7 +141,6 @@ func getDependenciesDetails(bim []buildinfo.Module, repo string, sm artifactory.
 			case "vcs.revision":
 				vcsRevision = prop.Value
 			}
-
 		}
 		item := result[currentResult.Actual_Sha1]
 		item.Build = buildName + buildNumber
