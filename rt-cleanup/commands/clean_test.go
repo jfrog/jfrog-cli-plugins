@@ -7,14 +7,14 @@ import (
 )
 
 const (
-	REPO = "testRepo"
-	TIME = "17mo"
-	AQL  = `items.find({` +
+	repo = "testRepo"
+	time = "17mo"
+	aql  = `items.find({` +
 		`"type":"file",` +
-		`"repo":` + `"` + REPO + `",` +
+		`"repo":` + `"` + repo + `",` +
 		`"$or": [` +
 		`{` +
-		`"stat.downloaded":{"$before":` + `"` + TIME + `"` + `},` +
+		`"stat.downloaded":{"$before":` + `"` + time + `"` + `},` +
 		`"stat.downloads":{"$eq":null}` +
 		`}` +
 		`]` +
@@ -23,10 +23,10 @@ const (
 
 func TestBuildAQL(t *testing.T) {
 	conf := &cleanConfiguration{
-		repository:       REPO,
-		noDownloadedTime: TIME,
+		repository:       repo,
+		noDownloadedTime: time,
 	}
-	assert.Equal(t, buildAQL(conf), AQL)
+	assert.Equal(t, buildAQL(conf), aql)
 }
 
 func TestParseTimeFlags(t *testing.T) {
