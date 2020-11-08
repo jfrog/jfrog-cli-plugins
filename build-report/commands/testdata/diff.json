@@ -1,0 +1,99 @@
+{
+  "artifacts": {
+    "updated" : [ {
+      "name" : "gggggg",
+      "diffName" : "gggggg",
+      "module" : "builddiff",
+      "sha1" : "5747e3a430b2389da6566a591d1aa726c474e942",
+      "md5" : "afd920ad5e3d913b7c9e658225c1710e"
+    } ],
+    "unchanged": [
+      {
+        "name": "normal",
+        "diffName": "normal",
+        "module": "buildreport",
+        "sha1": "42de5ebf203be4b8be39ab18ffb517254b84ec7a",
+        "md5": "7803a7f911fec8f46d839c78c49af520"
+      }
+    ],
+    "removed": [
+      {
+        "diffName": "gggggg",
+        "module": "buildreport"
+      }
+    ],
+    "new": [
+      {
+        "name": "one.more",
+        "module": "buildreport",
+        "type": "more",
+        "sha1": "2fed359ef19c218d052b6ad0f8ac701a5a929030",
+        "md5": "7a4ceb07c7af56fbc520f335534714cd"
+      }
+    ]
+  },
+  "dependencies": {
+    "updated" : [ {
+      "module" : "builddiff",
+      "sha1" : "fc0d2c99c15563f25d986b6d57ab269c66e048a6",
+      "md5" : "998722b641f88340cb4b02df754cb9ee",
+      "id" : "updated",
+      "diffId" : "updated"
+    } ],
+    "unchanged" : [ {
+      "module" : "builddiff",
+      "sha1" : "f55a5c2eacc39b4bf339c2077c55836f583c7642",
+      "md5" : "7a4945d5fc464e6fc088dc9e5772a5f4",
+      "id" : "spec",
+      "diffId" : "spec"
+    }, {
+      "module" : "builddiff",
+      "sha1" : "42de5ebf203be4b8be39ab18ffb517254b84ec7a",
+      "md5" : "7803a7f911fec8f46d839c78c49af520",
+      "id" : "normalf",
+      "diffId" : "normal"
+    } ],
+    "removed": [
+      {
+        "module": "buildreport",
+        "diffId": "spec"
+      }
+    ],
+    "new": [
+      {
+        "module": "buildreport",
+        "sha1": "9074f204be86d88c45ca6fac8631d05647212918",
+        "md5": "6ed11cdb7974790fdf90f9683b83dd07",
+        "id": "has.dot.txt"
+      }
+    ]
+  },
+  "properties": {
+    "updated": [
+      {
+        "key": "buildInfo.env.JFROG_CLI_BUILD_NUMBER",
+        "value": "2",
+        "diffValue": "1",
+        "compoundKeyValue": "buildInfo.env.JFROG_CLI_BUILD_NUMBER:2",
+        "compoundDiffKeyValue": "buildInfo.env.JFROG_CLI_BUILD_NUMBER:1"
+      }
+    ],
+    "unchanged": [
+      {
+        "key": "buildInfo.env.ENV",
+        "value": "a",
+        "diffValue": "a",
+        "compoundKeyValue": "buildInfo.env.ENV:a",
+        "compoundDiffKeyValue": "buildInfo.env.ENV:a"
+      }
+    ],
+    "removed": [],
+    "new": [
+      {
+        "key": "buildInfo.env.NEW_DIFF_NEW",
+        "value": "TRUE",
+        "compoundKeyValue": "buildInfo.env.NEW_DIFF_NEW:TRUE"
+      }
+    ]
+  }
+}
