@@ -1,4 +1,4 @@
-# hello-frog
+# build-deps-info
 
 ## About this plugin
 Build-deps-info plugin print dependencies details of a specific build name & build number in Artifactory which includes,
@@ -24,7 +24,7 @@ Uninstalling a plugin
         - build-name - The name of the build.
         - build-number - The number of the build.
     - flags:
-        - repo: Search the dependencies' build in a specific folder **[Default: All Artifactory]**
+        - repo: Search the dependencies' build in a specific Repository **[Default: All Artifactory]**
     - example:
     ```
   $ jfrog build-deps-info print  my_build_name 1 --repo=maven-local
