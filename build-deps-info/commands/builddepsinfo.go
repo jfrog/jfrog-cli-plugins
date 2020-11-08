@@ -24,12 +24,10 @@ import (
 )
 
 // Artifactory has a max number of character for a single request,
-// therefore we limit the maximum number of sha1 and repositories for a single AQL request.
+// therefore we limit the maximum number of sha1 for a single AQL request.
 const (
-	repoBatchSize = 5
+	sha1BatchSize = 125
 )
-
-var sha1BatchSize = 125
 
 type BuildDepsInfo struct {
 	buildName       string
@@ -70,7 +68,6 @@ func (p *BuildDepsInfo) Exec() error {
 		return err
 	}
 	if buildinfo.Name == "" || buildinfo.Number == "" {
-
 		return errors.New("Build '" + p.buildName + "/" + p.buildNumber + "' not found")
 	}
 	t := table.NewWriter()
@@ -157,7 +154,7 @@ func getArtifactsPropsBySha1(repository string, sha1s *utils.StringSet, sm artif
 	}
 	sha1Batches := utils.GroupItems(sha1s.ToSlice(), sha1BatchSize)
 	searchResults := make([]*content.ContentReader, len(sha1Batches))
-	producerConsumer := parallel.NewBounedRunner(1, false)
+	producerConsumer := parallel.NewBounedRunner(3, false)
 	errorsQueue := clientutils.NewErrorsQueue(1)
 	handlerFunc := createGetArtifactsPropsBySha1Func(repository, sm, searchResults)
 	go func() {
