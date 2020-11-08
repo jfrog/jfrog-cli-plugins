@@ -24,6 +24,7 @@ Uninstalling a plugin
     - Arguments:
         - repository - The name of the repository you would like to clean.
     - Flags:
+        - server-id: The Artifactory server ID configured using the config command.
         - time-unit: The time unit of the no-dl time. year, month and day are the allowed values. **[Default: month]**
         - no-dl: Artifacts that have not been downloaded for at least no-dl will be deleted.. **[Default: 1]**
     - Examples:

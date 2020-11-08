@@ -40,6 +40,10 @@ func getCleanArguments() []components.Argument {
 func getCleanFlags() []components.Flag {
 	return []components.Flag{
 		components.StringFlag{
+			Name:        "server-id",
+			Description: "Artifactory server ID configured using the config command.",
+		},
+		components.StringFlag{
 			Name:         "time-unit",
 			Description:  "The time unit of the no-dl time. year, month and day are the allowed values.",
 			DefaultValue: "month",
