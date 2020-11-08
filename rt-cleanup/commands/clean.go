@@ -40,19 +40,14 @@ func getCleanArguments() []components.Argument {
 func getCleanFlags() []components.Flag {
 	return []components.Flag{
 		components.StringFlag{
-			Name:         "timeUnit",
-			Description:  "The time unit of the maximal time. year, month, day are allowed values.",
+			Name:         "time-unit",
+			Description:  "The time unit of the no-dl time. year, month and day are the allowed values.",
 			DefaultValue: "month",
 		},
 		components.StringFlag{
-			Name:         "maximalTime",
-			Description:  "Artifacts that have not been downloaded for the past maximalTime will be deleted.",
+			Name:         "no-dl",
+			Description:  "Artifacts that have not been downloaded for at least no-dl will be deleted.",
 			DefaultValue: "1",
-		},
-		components.StringFlag{
-			Name:         "maximalSize",
-			Description:  "Artifacts that are smaller than maximalSize (bytes) will not be deleted.",
-			DefaultValue: "0",
 		},
 	}
 }
@@ -64,9 +59,8 @@ func getCleanEnvVar() []components.EnvVar {
 }
 
 type cleanConfiguration struct {
-	repository  string
-	maximalTime string
-	maximalSize string
+	repository       string
+	noDownloadedTime string
 }
 
 func cleanCmd(c *components.Context) error {
@@ -75,12 +69,11 @@ func cleanCmd(c *components.Context) error {
 	}
 	var conf = new(cleanConfiguration)
 	conf.repository = c.Arguments[0]
-	maximalTime, err := parseTimeFlags(c.GetStringFlagValue("maximalTime"), c.GetStringFlagValue("timeUnit"))
+	noDownloadedTime, err := parseTimeFlags(c.GetStringFlagValue("no-dl"), c.GetStringFlagValue("time-unit"))
 	if err != nil {
 		return err
 	}
-	conf.maximalTime = maximalTime
-	conf.maximalSize = c.GetStringFlagValue("maximalSize")
+	conf.noDownloadedTime = noDownloadedTime
 	rtDetails, err := getRtDetails(c)
 	if err != nil {
 		return err
@@ -113,12 +106,10 @@ func cleanArtifcats(config *cleanConfiguration, artifactoryDetails *config.Artif
 }
 
 func buildAQL(c *cleanConfiguration) (aqlQuery string) {
-	// Finds all artfacts that hasn't been downloaded for the last time before maximalTime
-	// (or never been downloaded) and theirs size is bigger than maximalSize
+	// Finds all artfacts that hasn't been downloaded for at least noDownloadedTime (or has never been downloaded)
 	aqlQuery = `items.find({` +
 		`"type":"file",` +
 		`"repo":%q,` +
-		`"size":{"$gte":%q},` +
 		`"$or": [` +
 		`{` +
 		`"stat.downloaded":{"$before":%q},` +
@@ -127,14 +118,14 @@ func buildAQL(c *cleanConfiguration) (aqlQuery string) {
 		`]` +
 		`})`
 
-	return fmt.Sprintf(aqlQuery, c.repository, c.maximalSize, c.maximalTime)
+	return fmt.Sprintf(aqlQuery, c.repository, c.noDownloadedTime)
 }
 
 // given the 2 inputs: timeUnit and time returns a string represents this time interval.
 // For example: 1, month => 1mo
-func parseTimeFlags(maximalTime, timeUnit string) (timeString string, err error) {
-	// Validate maximalTime
-	timeValue, err := strconv.Atoi(maximalTime)
+func parseTimeFlags(noDownloadedTime, timeUnit string) (timeString string, err error) {
+	// Validate no-dl
+	timeValue, err := strconv.Atoi(noDownloadedTime)
 	if err != nil {
 		return
 	}

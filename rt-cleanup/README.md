@@ -24,15 +24,12 @@ Uninstalling a plugin
     - Arguments:
         - repository - The name of the repository you would like to clean.
     - Flags:
-        - timeUnit: The time unit of the maximal time. year, month, day are allowed values. **[Default: month]**
-        - maximalTime: Artifacts that have not been downloaded for the past maximalTime will be deleted. **[Default: 1]**
-        - maximalSize: Artifacts that are smaller than maximalSize (bytes) will not be deleted. **[Default: 0]**
+        - time-unit: The time unit of the no-dl time. year, month and day are the allowed values. **[Default: month]**
+        - no-dl: Artifacts that have not been downloaded for at least no-dl will be deleted.. **[Default: 1]**
     - Examples:
     ```
-  $ jfrog rt-cleanup clean example-repo-local --timeUnit=day --maximalTime=3 --maximalSize=1000000
+    $ jfrog rt-cleanup clean example-repo-local --time-unit=day --no-dl=3
 
-    Will delate all files that haven't been downloaded in the past 3 days and have size bigger than 1000000 bytes
-    from the example-repo-local repository.
     ```
 
 ### Environment variables
@@ -43,4 +40,3 @@ None.
 
 ## Release Notes
 The release notes are available [here](RELEASE.md).
-

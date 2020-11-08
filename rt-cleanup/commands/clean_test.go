@@ -9,11 +9,9 @@ import (
 const (
 	REPO = "testRepo"
 	TIME = "17mo"
-	SIZE = "100000"
 	AQL  = `items.find({` +
 		`"type":"file",` +
 		`"repo":` + `"` + REPO + `",` +
-		`"size":{"$gte":` + `"` + SIZE + `"` + `},` +
 		`"$or": [` +
 		`{` +
 		`"stat.downloaded":{"$before":` + `"` + TIME + `"` + `},` +
@@ -25,9 +23,8 @@ const (
 
 func TestBuildAQL(t *testing.T) {
 	conf := &cleanConfiguration{
-		repository:  REPO,
-		maximalTime: TIME,
-		maximalSize: SIZE,
+		repository:       REPO,
+		noDownloadedTime: TIME,
 	}
 	assert.Equal(t, buildAQL(conf), AQL)
 }

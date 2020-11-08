@@ -13,7 +13,7 @@ func main() {
 func getApp() components.App {
 	app := components.App{}
 	app.Name = "rt-cleanup"
-	app.Description = "Easily clean old artifacts"
+	app.Description = "Easily clean unused artifacts"
 	app.Version = "v1.0.0"
 	app.Commands = getCommands()
 	return app
