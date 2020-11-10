@@ -145,8 +145,18 @@ func fillBuildDetailsTable(t table.Writer, buildInfo buildinfo.BuildInfo) {
 	// Repeating Agents in the first header will be merged as one cell above their name/version.
 	t.AppendHeader(table.Row{"Name", "Number", "Started", "Artifactory Principal", "Agent", "Agent", "Build Agent", "Build Agent"}, table.RowConfig{AutoMerge: true})
 	t.AppendHeader(table.Row{"", "", "", "", "Name", "Version", "Name", "Version"})
+
+	var agentName, agentVersion, buildAgentName, buildAgentVersion string
+	if buildInfo.Agent != nil {
+		agentName = buildInfo.Agent.Name
+		agentVersion = buildInfo.Agent.Version
+	}
+	if buildInfo.BuildAgent != nil {
+		buildAgentName = buildInfo.BuildAgent.Name
+		buildAgentVersion = buildInfo.BuildAgent.Version
+	}
 	t.AppendRow(table.Row{buildInfo.Name, buildInfo.Number, buildInfo.Started, buildInfo.ArtifactoryPrincipal,
-		buildInfo.Agent.Name, buildInfo.Agent.Version, buildInfo.BuildAgent.Name, buildInfo.BuildAgent.Version})
+		agentName, agentVersion, buildAgentName, buildAgentVersion})
 }
 
 func printBuildModulesTable(modules []buildinfo.Module) {
@@ -167,10 +177,20 @@ func fillBuildModulesTable(t table.Writer, modules []buildinfo.Module) {
 	t.AppendHeader(table.Row{"Module", "Art/Dep", "Name/ID", "Type", "Sha1", "Md5"})
 	for _, mod := range modules {
 		for _, art := range mod.Artifacts {
-			t.AppendRow(table.Row{mod.Id, "Artifact", art.Name, art.Type, art.Sha1, art.Md5})
+			var sha1, md5 string
+			if art.Checksum != nil {
+				sha1 = art.Sha1
+				md5 = art.Md5
+			}
+			t.AppendRow(table.Row{mod.Id, "Artifact", art.Name, art.Type, sha1, md5})
 		}
 		for _, dep := range mod.Dependencies {
-			t.AppendRow(table.Row{mod.Id, "Dependency", dep.Id, dep.Type, dep.Sha1, dep.Md5})
+			var sha1, md5 string
+			if dep.Checksum != nil {
+				sha1 = dep.Sha1
+				md5 = dep.Md5
+			}
+			t.AppendRow(table.Row{mod.Id, "Dependency", dep.Id, dep.Type, sha1, md5})
 		}
 	}
 }

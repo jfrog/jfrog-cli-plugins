@@ -107,10 +107,16 @@ func (a ArtifactDiff) GetArtOrDep() string {
 }
 
 func (a ArtifactDiff) GetSha1() string {
+	if a.Checksum == nil {
+		return ""
+	}
 	return a.Sha1
 }
 
 func (a ArtifactDiff) GetMd5() string {
+	if a.Checksum == nil {
+		return ""
+	}
 	return a.Md5
 }
 
@@ -141,10 +147,16 @@ func (d DependencyDiff) GetArtOrDep() string {
 }
 
 func (d DependencyDiff) GetSha1() string {
+	if d.Checksum == nil {
+		return ""
+	}
 	return d.Sha1
 }
 
 func (d DependencyDiff) GetMd5() string {
+	if d.Checksum == nil {
+		return ""
+	}
 	return d.Md5
 }
 
