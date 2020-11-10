@@ -42,6 +42,7 @@ var processSearchResultsProvider = []struct {
 	{"sample1.json", "libs-release-local", []string{"org", ".nupkg"}, []string{"folder", "file"}, 6},
 	{"sample1.json", "libs-release-local/", []string{"org", ".nupkg"}, []string{"folder", "file"}, 6},
 	{"sample2.json", "libs-release-local/org/jfrog/example/gradle/", []string{"services", "shared", "api", "webservice", "gradle-example-ci-server"}, []string{"folder", "folder", "folder", "folder", "folder", "folder"}, 24},
+	{"sample3.json", "libs-release-local/org", []string{"org"}, []string{"folder", "file"}, 3},
 }
 
 func TestProcessSearchResults(t *testing.T) {
@@ -51,7 +52,7 @@ func TestProcessSearchResults(t *testing.T) {
 			filePath := prepareSample(t, sample.sampleName)
 			contentReader := content.NewContentReader(filePath, "results")
 			searchResults.SetReader(contentReader)
-			actualResults, actualMaxPath, err := processSearchResults(sample.searchPattern, searchResults)
+			actualResults, actualMaxPath, err := processSearchResults(sample.searchPattern, searchResults.Reader())
 			assert.NoError(t, err)
 			assert.Equal(t, sample.maxPathLength, actualMaxPath)
 			for i := range sample.expectedPaths {
@@ -66,8 +67,34 @@ func TestProcessSearchResultsNotExist(t *testing.T) {
 	searchResults := &commandsutils.Result{}
 	contentReader := content.NewContentReader("", "results")
 	searchResults.SetReader(contentReader)
-	_, _, err := processSearchResults("dummyPattern", searchResults)
+	_, _, err := processSearchResults("dummyPattern", searchResults.Reader())
 	assert.EqualError(t, err, "ls: cannot access 'dummyPattern': No such file or directory")
+}
+
+var shouldRunSecondSearchProvider = []struct {
+	sampleName string
+	path       string
+	expected   bool
+}{
+	{"sample1.json", "libs-release-local", false},
+	{"sample1.json", "libs-release-local/", false},
+	{"sample2.json", "libs-release-local/org/jfrog/example/gradle/", false},
+	{"sample2.json", "libs-release-local/org/", false},
+	{"sample3.json", "libs-release-local/org", true},
+}
+
+func TestShouldRunSecondSearch(t *testing.T) {
+	searchResults := &commandsutils.Result{}
+	for _, sample := range shouldRunSecondSearchProvider {
+		t.Run(fmt.Sprintf("%v", sample), func(t *testing.T) {
+			filePath := prepareSample(t, sample.sampleName)
+			contentReader := content.NewContentReader(filePath, "results")
+			searchResults.SetReader(contentReader)
+			actual, err := shouldRunSecondSearch(sample.path, contentReader)
+			assert.NoError(t, err)
+			assert.Equal(t, sample.expected, actual)
+		})
+	}
 }
 
 // Copy a sample from commands/testdata to a temp file and return the target path
