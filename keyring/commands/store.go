@@ -13,7 +13,7 @@ const ServiceId = "keyring-jfrog-cli-plugin"
 func GetStoreCommand() components.Command {
 	return components.Command{
 		Name:        "store",
-		Description: "Store Artifactory configuration in the system keyring.",
+		Description: "Store Artifactory configuration in the OS keyring.",
 		Aliases:     []string{"s"},
 		Flags:       getStoreFlags(),
 		Action: func(c *components.Context) error {
@@ -75,7 +75,7 @@ func doStore(conf storeConfiguration) error {
 
 	err = keyring.Set(ServiceId, conf.ServerId, string(secret))
 	if err == nil {
-		log.Info("Stored Artifactory configuration in the system keering")
+		log.Info("Stored Artifactory configuration in the OS keering")
 	}
 
 	return err

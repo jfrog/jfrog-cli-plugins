@@ -13,16 +13,16 @@ func main() {
 func getApp() components.App {
 	app := components.App{}
 	app.Name = "keyring"
-	app.Description = "Store Artifactory configuration in the system keyring and use them when running JFrog CLI commands."
+	app.Description = "Store Artifactory configuration in the OS keyring and use them when running JFrog CLI commands."
 	app.Version = "v1.0.0"
 	app.Commands = getCommands()
 	return app
 }
 
 func getCommands() []components.Command {
-	list := []components.Command{
+	return []components.Command{
 		commands.GetStoreCommand(),
+		commands.GetUseCommand(),
+		commands.GetDeleteCommand(),
 	}
-	list = append(list, commands.GetUseCommand())
-	return append(list, commands.GetDeleteCommand())
 }

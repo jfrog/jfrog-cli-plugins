@@ -2,9 +2,9 @@
 
 ## About this plugin
 This plugin allows the following:
-* Storing the connection details of multiple Artifactory instances in the system keyring.
+* Storing the connection details of multiple Artifactory instances in the OS keyring.
 * Using the stored connection details for executing any Artifactory JFrog CLI command.
-* Deleting the stored connection details from the system keyring.
+* Deleting the stored connection details from the OS keyring.
 
 Supports Linux, Windows and MacOS.
 
@@ -23,7 +23,7 @@ Uninstalling a plugin
 
 ## Usage
 ### Commands
-* Store the Artifactory connection details is the system keyring.
+* Store the Artifactory connection details is the OS keyring.
     - Name: store
     - Alias: s
     - Arguments:
@@ -51,7 +51,7 @@ Uninstalling a plugin
   $ jfrog keyring use Artifactory-1 search "generic-local/path/"
   $ jfrog keyring use Artifactory-1 download "generic-local/path/" --flat --recursive
   ```
-* Delete Artifactory connection details from the system keyring.
+* Delete Artifactory connection details from the OS keyring.
     - Name: delete
     - Alias: del
     - Arguments:
