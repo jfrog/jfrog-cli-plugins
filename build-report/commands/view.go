@@ -116,9 +116,12 @@ func verifyOlderDiffBuildNumber(buildNumber, buildNumberDiff string) error {
 }
 
 func doView(rtDetails *config.ArtifactoryDetails, buildName, buildNumber, buildNumberDiff string) error {
-	publishedBuildInfo, err := utils.GetBuildInfo(rtDetails, buildName, buildNumber)
+	publishedBuildInfo, found, err := utils.GetBuildInfo(rtDetails, buildName, buildNumber)
 	if err != nil {
 		return err
+	}
+	if !found {
+		return errors.New("build info with provided details was not found in Artifactory")
 	}
 	diff, err := utils.GetBuildDiff(rtDetails, buildName, buildNumber, buildNumberDiff)
 	if err != nil {

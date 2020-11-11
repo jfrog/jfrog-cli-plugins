@@ -45,10 +45,10 @@ func GetBuildDetails(c *components.Context) (buildName, buildNumber string, err 
 }
 
 // Get build info from Artifactory.
-func GetBuildInfo(rtDetails *config.ArtifactoryDetails, buildName, buildNumber string) (*buildinfo.PublishedBuildInfo, error) {
+func GetBuildInfo(rtDetails *config.ArtifactoryDetails, buildName, buildNumber string) (*buildinfo.PublishedBuildInfo, bool, error) {
 	servicesManager, err := utils.CreateServiceManager(rtDetails, false)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	buildInfoParams := services.BuildInfoParams{BuildName: buildName, BuildNumber: buildNumber}
 	return servicesManager.GetBuildInfo(buildInfoParams)

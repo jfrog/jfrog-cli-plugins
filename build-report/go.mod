@@ -10,6 +10,6 @@ require (
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 )
 
-replace github.com/jfrog/jfrog-cli-core => /Users/robin/proj-dev/jfrog-cli-core
+replace github.com/jfrog/jfrog-cli-core => github.com/jfrog/jfrog-cli-core dev
 
-replace github.com/jfrog/jfrog-client-go => /Users/robin/proj-dev/jfrog-client-go
+replace github.com/jfrog/jfrog-client-go => github.com/jfrog/jfrog-client-go dev
