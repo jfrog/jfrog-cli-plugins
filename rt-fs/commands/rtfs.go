@@ -11,8 +11,7 @@ import (
 	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
 	"github.com/jfrog/jfrog-cli-core/utils/config"
-
-	commandsutils "github.com/jfrog/jfrog-cli-core/artifactory/commands/utils"
+	"github.com/jfrog/jfrog-client-go/utils/io/content"
 )
 
 func GetLsCommand() components.Command {
@@ -74,15 +73,14 @@ func lsCmd(c *components.Context) error {
 
 func doLs(c *lsConfiguration) error {
 	// Execute search command
-	searchCmd := generic.NewSearchCommand()
-	spec := spec.NewBuilder().Pattern(c.path).IncludeDirs(true).BuildSpec()
-	searchCmd.SetRtDetails(c.details).SetSpec(spec)
-	if err := commands.Exec(searchCmd); err != nil {
+	reader, err := doSearch(c)
+	if err != nil {
 		return err
 	}
+	defer reader.Close()
 
 	// Get structured search results and the path with the max length
-	searchResults, maxPathLength, err := processSearchResults(c.path, searchCmd.Result())
+	searchResults, maxPathLength, err := processSearchResults(c.path, reader)
 	if err != nil {
 		return err
 	}
@@ -93,7 +91,42 @@ func doLs(c *lsConfiguration) error {
 	return nil
 }
 
+func doSearch(c *lsConfiguration) (*content.ContentReader, error) {
+	// Run the first search
+	searchCmd := generic.NewSearchCommand()
+	searchSpec := spec.NewBuilder().Pattern(c.path).IncludeDirs(true).BuildSpec()
+	searchCmd.SetRtDetails(c.details).SetSpec(searchSpec)
+	if err := commands.Exec(searchCmd); err != nil {
+		return nil, err
+	}
+
+	// Check the search results
+	reader := searchCmd.Result().Reader()
+	if err := checkSearchResults(reader, c.path); err != nil {
+		reader.Close()
+		return nil, err
+	}
+
+	// Check if a second search is needed
+	runSecondSearch, err := shouldRunSecondSearch(c.path, reader)
+	if !runSecondSearch || err != nil {
+		return reader, err
+	}
+
+	// Close the first search reader
+	if err := reader.Close(); err != nil {
+		return nil, err
+	}
+
+	// Run search again with "/" in the end of the pattern
+	searchSpec = spec.NewBuilder().Pattern(c.path + "/").IncludeDirs(true).BuildSpec()
+	searchCmd.SetSpec(searchSpec)
+	err = commands.Exec(searchCmd)
+	return searchCmd.Result().Reader(), err
+}
+
 func printLsResults(searchResults []utils.SearchResult, maxPathLength int) {
+	maxPathLength += minSpace
 	maxResultsInLine := goterm.Width() / maxPathLength
 	if maxResultsInLine == 0 {
 		maxResultsInLine = 1
@@ -118,9 +151,7 @@ func printLsResults(searchResults []utils.SearchResult, maxPathLength int) {
 
 // Gets the search results and builds an array of SearchResults.
 // Return also the path with the maximum size.
-func processSearchResults(pattern string, searchResults *commandsutils.Result) ([]utils.SearchResult, int, error) {
-	reader := searchResults.Reader()
-	defer reader.Close()
+func processSearchResults(pattern string, reader *content.ContentReader) ([]utils.SearchResult, int, error) {
 	if err := checkSearchResults(reader, pattern); err != nil {
 		return nil, 0, err
 	}
@@ -139,5 +170,5 @@ func processSearchResults(pattern string, searchResults *commandsutils.Result) (
 		}
 		result = new(utils.SearchResult)
 	}
-	return allResults, maxPathLength + 1, reader.GetError()
+	return allResults, maxPathLength, reader.GetError()
 }
