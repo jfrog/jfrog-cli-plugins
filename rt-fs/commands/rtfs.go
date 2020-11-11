@@ -73,13 +73,14 @@ func lsCmd(c *components.Context) error {
 
 func doLs(c *lsConfiguration) error {
 	// Execute search command
-	results, err := doSearch(c)
+	reader, err := doSearch(c)
 	if err != nil {
 		return err
 	}
+	defer reader.Close()
 
 	// Get structured search results and the path with the max length
-	searchResults, maxPathLength, err := processSearchResults(c.path, results)
+	searchResults, maxPathLength, err := processSearchResults(c.path, reader)
 	if err != nil {
 		return err
 	}
@@ -110,6 +111,11 @@ func doSearch(c *lsConfiguration) (*content.ContentReader, error) {
 	runSecondSearch, err := shouldRunSecondSearch(c.path, reader)
 	if !runSecondSearch || err != nil {
 		return reader, err
+	}
+
+	// Close the first search reader
+	if err := reader.Close(); err != nil {
+		return nil, err
 	}
 
 	// Run search again with "/" in the end of the pattern
@@ -146,7 +152,6 @@ func printLsResults(searchResults []utils.SearchResult, maxPathLength int) {
 // Gets the search results and builds an array of SearchResults.
 // Return also the path with the maximum size.
 func processSearchResults(pattern string, reader *content.ContentReader) ([]utils.SearchResult, int, error) {
-	defer reader.Close()
 	if err := checkSearchResults(reader, pattern); err != nil {
 		return nil, 0, err
 	}
