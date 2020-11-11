@@ -12,7 +12,6 @@ import (
 	"github.com/jfrog/jfrog-client-go/utils/log"
 	"golang.org/x/crypto/ssh/terminal"
 	"os"
-	"strconv"
 )
 
 func GetViewCommand() components.Command {
@@ -84,10 +83,6 @@ func viewCmd(c *components.Context) error {
 	}
 
 	buildNumberDiff := c.GetStringFlagValue(diffFlag)
-	err = verifyOlderDiffBuildNumber(buildNumber, buildNumberDiff)
-	if err != nil {
-		return err
-	}
 
 	rtDetails, err := utils.GetRtDetails(c)
 	if err != nil {
@@ -95,24 +90,6 @@ func viewCmd(c *components.Context) error {
 	}
 
 	return doView(rtDetails, buildName, buildNumber, buildNumberDiff)
-}
-
-func verifyOlderDiffBuildNumber(buildNumber, buildNumberDiff string) error {
-	if buildNumberDiff == "" {
-		return nil
-	}
-	buildInt, err := strconv.Atoi(buildNumber)
-	if err != nil {
-		return err
-	}
-	buildDiffInt, err := strconv.Atoi(buildNumberDiff)
-	if err != nil {
-		return err
-	}
-	if buildDiffInt >= buildInt {
-		return errors.New("build number to show diff with must be older than the report build number")
-	}
-	return nil
 }
 
 func doView(rtDetails *config.ArtifactoryDetails, buildName, buildNumber, buildNumberDiff string) error {
