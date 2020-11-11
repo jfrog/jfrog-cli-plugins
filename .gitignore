@@ -1,0 +1,15 @@
+# IDEs
+.idea
+.vscode
+*.iml
+
+# Test files
+tmp
+out
+
+# Vim
+*~
+*.swp
+
+# IOS
+*.DS_Store
