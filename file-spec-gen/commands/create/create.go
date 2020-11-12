@@ -47,8 +47,6 @@ func Run(c *components.Context) error {
 
 	// Handle result.
 	return handleResult(output, file)
-
-	return nil
 }
 
 func handleResult(output []byte, file string) error {
