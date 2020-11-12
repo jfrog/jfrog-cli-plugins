@@ -39,10 +39,11 @@ github.com/jedib0t/go-pretty/v6 v6.0.5/go.mod h1:MTr6FgcfNdnN5wPVBzJ6mhJeDyiF0yB
 github.com/jfrog/gocmd v0.1.17/go.mod h1:O8mGn5+aEC3ru2NzyTkZ0a6hL5EIai4NNjYNzyFz/4A=
 github.com/jfrog/gofrog v1.0.6 h1:yUDxSCw8gTK6vC4PvtG0HTnEOQJSZ+O4lWGCgkev1nU=
 github.com/jfrog/gofrog v1.0.6/go.mod h1:HkDzg+tMNw23UryoOv0+LB94BzYcl6MCIoz8Tmlb+s8=
-github.com/jfrog/jfrog-cli-core v1.1.1-0.20201108214825-e026606b05a6 h1:Pq1al305onLxKFxH+5sh8IAjE3/PeUpHANef3r+k/NM=
-github.com/jfrog/jfrog-cli-core v1.1.1-0.20201108214825-e026606b05a6/go.mod h1:efkwzRja19pg5EH/xhUxJ5niIJQxFjFvcYcTRZUdJO8=
-github.com/jfrog/jfrog-client-go v0.15.1-0.20201111101506-50779cee9c0f h1:1RAnrvpD2LbWPm3nH8Y+eUXpE5lxidWcxXd/oc2OT4E=
-github.com/jfrog/jfrog-client-go v0.15.1-0.20201111101506-50779cee9c0f/go.mod h1:v365V7GVxhzgrirZAxg81bZB+PQZMOKrHLXkon6vKp4=
+github.com/jfrog/jfrog-cli-core v1.1.1 h1:pAgf8MQIVwtHDxDEPdnfayW2Czpbh87OKOnr9ZoSpys=
+github.com/jfrog/jfrog-cli-core v1.1.1/go.mod h1:tazUzga9nleV1/SKxJ1CB8Dho6qjvMtuFz4XJ8R81j8=
+github.com/jfrog/jfrog-client-go v0.15.0/go.mod h1:v365V7GVxhzgrirZAxg81bZB+PQZMOKrHLXkon6vKp4=
+github.com/jfrog/jfrog-client-go v0.16.0 h1:b84v5ybkKUpcfP+dKjtOJNqn7l/je/IHVmYrsb5Rwo8=
+github.com/jfrog/jfrog-client-go v0.16.0/go.mod h1:v365V7GVxhzgrirZAxg81bZB+PQZMOKrHLXkon6vKp4=
 github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e h1:RgQk53JHp/Cjunrr1WlsXSZpqXn+uREuHvUVcK82CV8=
 github.com/kevinburke/ssh_config v0.0.0-20180830205328-81db2a75821e/go.mod h1:CT57kijsi8u/K/BOFA39wgDQJ9CxiF4nAY/ojJ6r6mM=
 github.com/klauspost/compress v1.4.1/go.mod h1:RyIbtBH6LamlWaDj8nUwkbUhJ87Yi3uG0guNDohfE1A=
