@@ -16,8 +16,48 @@ import (
 	clientlog "github.com/jfrog/jfrog-client-go/utils/log"
 )
 
-// The minimal space between ls results in the screen 
-const minSpace = 1
+func getCommonArguments() []components.Argument {
+	return []components.Argument{
+		{
+			Name:        "path",
+			Description: "[Mandatory] Path in Artifactory.",
+		},
+	}
+}
+
+func getCommonFlags() []components.Flag {
+	return []components.Flag{
+		components.StringFlag{
+			Name:        "server-id",
+			Description: "Artifactory server ID configured using the config command.",
+		},
+	}
+}
+
+type commonConfiguration struct {
+	details *config.ArtifactoryDetails
+	path    string
+}
+
+func createCommonConfiguration(c *components.Context) (*commonConfiguration, error) {
+	if err := checkInputs(c); err != nil {
+		return nil, err
+	}
+
+	confDetails, err := getRtDetails(c)
+	if err != nil {
+		return nil, err
+	}
+
+	// Increase log level to avoid search command logs
+	increaseLogLevel()
+
+	conf := &commonConfiguration{
+		details: confDetails,
+		path:    c.Arguments[0],
+	}
+	return conf, nil
+}
 
 func checkInputs(c *components.Context) error {
 	if len(c.Arguments) != 1 {
@@ -85,17 +125,6 @@ func increaseLogLevel() {
 	if log.GetCliLogLevel() == clientlog.INFO {
 		clientlog.SetLogger(clientlog.NewLogger(clientlog.ERROR, nil))
 	}
-}
-
-// Check validity of search results.
-func checkSearchResults(reader *content.ContentReader, pattern string) error {
-	if length, err := reader.Length(); length == 0 {
-		if err == nil {
-			err = errors.New("ls: cannot access '" + pattern + "': No such file or directory")
-		}
-		return err
-	}
-	return nil
 }
 
 // Trim the pattern from path.
