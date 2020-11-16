@@ -4,10 +4,10 @@ import (
 	"errors"
 	"strconv"
 
+	"github.com/jfrog/jfrog-cli-core/artifactory/commands"
 	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
 	"github.com/jfrog/jfrog-cli-core/plugins"
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
-	"github.com/jfrog/jfrog-cli-core/utils/config"
 	builddepsinfo "github.com/jfrog/jfrog-cli-plugins/build-deps-info/commands"
 )
 
@@ -18,17 +18,17 @@ func main() {
 		Version:     "v1.0.0",
 		Commands: []components.Command{
 			{
-				Name:        "print",
-				Description: "Print the dependencies of a build",
+				Name:        "show",
+				Description: "show the dependencies of a build to the standart output",
 				Aliases:     []string{"p"},
-				Arguments:   getPrintArguments(),
-				Flags:       getPrintFlags(),
+				Arguments:   getShowArguments(),
+				Flags:       getShowFlags(),
 				EnvVars:     []components.EnvVar{},
 				Action: func(c *components.Context) error {
 					if len(c.Arguments) != 2 {
 						return errors.New("Wrong number of arguments. Expected: 2, " + "Received: " + strconv.Itoa(len(c.Arguments)))
 					}
-					rtDetails, err := config.GetDefaultArtifactoryConf()
+					rtDetails, err := commands.GetConfig(c.GetStringFlagValue("server-id"), true)
 					if err != nil {
 						return err
 					}
@@ -44,24 +44,29 @@ func main() {
 	})
 }
 
-func getPrintArguments() []components.Argument {
+func getShowArguments() []components.Argument {
 	return []components.Argument{
 		{
 			Name:        "build-name",
-			Description: "The name of the build you would like to print.",
+			Description: "The name of the build you would like to show.",
 		},
 		{
 			Name:        "build-number",
-			Description: "The number of the build name you would like to print.",
+			Description: "The number of the build name you would like to show.",
 		},
 	}
 }
 
-func getPrintFlags() []components.Flag {
+func getShowFlags() []components.Flag {
 	return []components.Flag{
 		components.StringFlag{
 			Name:         "repo",
 			Description:  "In which repository in artifactory the dependencies is located",
+			DefaultValue: "",
+		},
+		components.StringFlag{
+			Name:         "server-id",
+			Description:  "Artifactory server ID configured using the config command. If not specified, the default configured Artifactory server is used.",
 			DefaultValue: "",
 		},
 	}

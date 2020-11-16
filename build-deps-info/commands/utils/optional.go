@@ -6,10 +6,10 @@ import (
 	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 )
 
-const DEFAULT_VALUE = "N/A"
+const DefaultValue = "N/A"
 
 func Optional(optionalValue string) (value string) {
-	value = DEFAULT_VALUE
+	value = DefaultValue
 	if optionalValue != "" {
 		value = optionalValue
 	}
@@ -17,10 +17,10 @@ func Optional(optionalValue string) (value string) {
 }
 
 func OptionalVcsUrl(vcs *buildinfo.Vcs) (value string) {
-	value = DEFAULT_VALUE
+	value = DefaultValue
 	if vcs != nil {
 		value = Optional(vcs.Url)
-		if value != DEFAULT_VALUE && vcs.Revision != "" {
+		if value != DefaultValue && vcs.Revision != "" {
 			value = strings.TrimSuffix(value, ".git") + "/commit/" + vcs.Revision
 		}
 	}
