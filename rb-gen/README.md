@@ -1,4 +1,4 @@
-# release-bundle-generator
+# rb-gen
 
 ## About this plugin
 
@@ -10,15 +10,15 @@ from Helm charts.
 
 Installing the latest version:
 
-`$ jfrog plugin install release-bundle-generator`
+`$ jfrog plugin install rb-gen`
 
 Installing a specific version:
 
-`$ jfrog plugin install release-bundle-generator@version`
+`$ jfrog plugin install rb-gen@version`
 
 Uninstalling a plugin
 
-`$ jfrog plugin uninstall release-bundle-generator`
+`$ jfrog plugin uninstall rb-gen`
 
 ## Usage
 
@@ -36,7 +36,7 @@ Uninstalling a plugin
       dependency Docker images should be available in this repository.
   - Example:
     ``` shell
-jfrog from-chart --chart-path=<chart path> --docker-repo=<Docker repo name> <bundle name> <bundle version>
+jfrog rb-gen from-chart --chart-path=<chart path> --docker-repo=<Docker repo name> <bundle name> <bundle version>
 ```
 
 Note that if Helm or Docker dependencies are found in a remote repository, they

@@ -1,4 +1,4 @@
-module github.com/jfrog/release-bundle-generator
+module github.com/jfrog/jfrog-cli-plugins/rb-gen
 
 go 1.14
 
