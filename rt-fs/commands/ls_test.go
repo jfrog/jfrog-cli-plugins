@@ -52,6 +52,7 @@ func TestProcessSearchResults(t *testing.T) {
 			filePath := prepareSample(t, sample.sampleName)
 			contentReader := content.NewContentReader(filePath, "results")
 			searchResults.SetReader(contentReader)
+			assert.NoError(t, checkSearchResults(contentReader, sample.searchPattern))
 			actualResults, actualMaxPath, err := processSearchResults(sample.searchPattern, searchResults.Reader())
 			assert.NoError(t, err)
 			assert.Equal(t, sample.maxPathLength, actualMaxPath)
@@ -63,11 +64,11 @@ func TestProcessSearchResults(t *testing.T) {
 	}
 }
 
-func TestProcessSearchResultsNotExist(t *testing.T) {
+func TestCheckSearchResultsFail(t *testing.T) {
 	searchResults := &commandsutils.Result{}
 	contentReader := content.NewContentReader("", "results")
 	searchResults.SetReader(contentReader)
-	_, _, err := processSearchResults("dummyPattern", searchResults.Reader())
+	err := checkSearchResults(searchResults.Reader(), "dummyPattern")
 	assert.EqualError(t, err, "ls: cannot access 'dummyPattern': No such file or directory")
 }
 

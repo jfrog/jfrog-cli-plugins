@@ -1,7 +1,7 @@
 # rt-fs
 
 ## About this plugin
-This plugin executes file system commands in Artifactory. It designed to mimic the functionality of the Linux/Unix 'ls' and 'cat' commands.
+This plugin executes file system commands in Artifactory. It is designed to mimic the functionality of the Linux/Unix 'ls' and 'cat' commands.
 
 ## Installation with JFrog CLI
 Installing the latest version:
@@ -22,7 +22,7 @@ Uninstalling a plugin
     - Arguments:
         - path - Path in Artifactory.
     - Flags:
-        - server-id: Artifactory server ID configured using the config command **[Optional]**
+        - --server-id: Artifactory server ID configured using the config command **[Optional]**
     - Example:
     ```
         $ jfrog rt-fs ls generic-local
@@ -32,7 +32,7 @@ Uninstalling a plugin
     - Arguments:
         - path - Path in Artifactory.
     - Flags:
-        - server-id: Artifactory server ID configured using the config command **[Optional]**
+        - --server-id: Artifactory server ID configured using the config command **[Optional]**
     - Example:
     ```
         $ jfrog rt-fs cat generic-local/file_name1.txt

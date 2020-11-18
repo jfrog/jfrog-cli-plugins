@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	downloadThreads      = 3
+	downloadThreads      = 1
 	downloadMinSplitSize = 5120
 	downloadRetries      = 3
 	downloadSplitCount   = 3
@@ -117,5 +117,4 @@ func createAql(downloadPath string) clientutils.Aql {
 	return clientutils.Aql{
 		ItemsFind: fmt.Sprintf(`{"repo":"%s","path":"%s","name":"%s"}`, repo, path, name),
 	}
-
 }
