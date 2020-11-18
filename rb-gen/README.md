@@ -36,8 +36,8 @@ Uninstalling a plugin
       dependency Docker images should be available in this repository.
   - Example:
     ``` shell
-jfrog rb-gen from-chart --chart-path=<chart path> --docker-repo=<Docker repo name> <bundle name> <bundle version>
-```
+    jfrog rb-gen from-chart --chart-path=<chart path> --docker-repo=<Docker repo name> <bundle name> <bundle version>
+    ```
 
 Note that if Helm or Docker dependencies are found in a remote repository, they
 must be cached. Otherwise, they won't show up in the release bundle. After
