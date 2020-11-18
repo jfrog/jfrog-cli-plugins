@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -10,68 +11,35 @@ import (
 	"github.com/jfrog/jfrog-cli-core/artifactory/spec"
 	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
-	"github.com/jfrog/jfrog-cli-core/utils/config"
 	"github.com/jfrog/jfrog-client-go/utils/io/content"
 )
+
+// The minimal space between ls results in the screen
+const minSpace = 1
 
 func GetLsCommand() components.Command {
 	return components.Command{
 		Name:        "ls",
 		Description: "Run ls.",
 		Aliases:     []string{"ls, list"},
-		Arguments:   getLsArguments(),
-		Flags:       getLsFlags(),
+		Arguments:   getCommonArguments(),
+		Flags:       getCommonFlags(),
 		Action: func(c *components.Context) error {
 			return lsCmd(c)
 		},
 	}
 }
 
-func getLsArguments() []components.Argument {
-	return []components.Argument{
-		{
-			Name:        "path",
-			Description: "[Mandatory] Path in Artifactory.",
-		},
-	}
-}
-
-func getLsFlags() []components.Flag {
-	return []components.Flag{
-		components.StringFlag{
-			Name:        "server-id",
-			Description: "Artifactory server ID configured using the config command.",
-		},
-	}
-}
-
-type lsConfiguration struct {
-	details *config.ArtifactoryDetails
-	path    string
-}
-
 func lsCmd(c *components.Context) error {
-	if err := checkInputs(c); err != nil {
-		return err
-	}
-
-	confDetails, err := getRtDetails(c)
+	conf, err := createCommonConfiguration(c)
 	if err != nil {
 		return err
-	}
-
-	// Increase log level to avoid search command logs
-	increaseLogLevel()
-
-	conf := &lsConfiguration{
-		details: confDetails,
-		path:    c.Arguments[0],
 	}
 
 	return doLs(conf)
 }
 
-func doLs(c *lsConfiguration) error {
+func doLs(c *commonConfiguration) error {
 	// Execute search command
 	reader, err := doSearch(c)
 	if err != nil {
@@ -91,7 +59,7 @@ func doLs(c *lsConfiguration) error {
 	return nil
 }
 
-func doSearch(c *lsConfiguration) (*content.ContentReader, error) {
+func doSearch(c *commonConfiguration) (*content.ContentReader, error) {
 	// Run the first search
 	searchCmd := generic.NewSearchCommand()
 	searchSpec := spec.NewBuilder().Pattern(c.path).IncludeDirs(true).BuildSpec()
@@ -152,10 +120,6 @@ func printLsResults(searchResults []utils.SearchResult, maxPathLength int) {
 // Gets the search results and builds an array of SearchResults.
 // Return also the path with the maximum size.
 func processSearchResults(pattern string, reader *content.ContentReader) ([]utils.SearchResult, int, error) {
-	if err := checkSearchResults(reader, pattern); err != nil {
-		return nil, 0, err
-	}
-
 	allResults := []utils.SearchResult{}
 	maxPathLength := 0
 	result := new(utils.SearchResult)
@@ -171,4 +135,15 @@ func processSearchResults(pattern string, reader *content.ContentReader) ([]util
 		result = new(utils.SearchResult)
 	}
 	return allResults, maxPathLength, reader.GetError()
+}
+
+// Check validity of search results.
+func checkSearchResults(reader *content.ContentReader, pattern string) error {
+	if length, err := reader.Length(); length == 0 {
+		if err == nil {
+			err = errors.New("ls: cannot access '" + pattern + "': No such file or directory")
+		}
+		return err
+	}
+	return nil
 }
