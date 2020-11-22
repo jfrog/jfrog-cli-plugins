@@ -72,12 +72,12 @@ func (p *BuildDepsInfo) Exec() error {
 	}
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"#", "Dependency name", "BUILD", "vcs url"})
+	t.AppendHeader(table.Row{"Module Id", "Dependency name", "BUILD", "VCS URL"})
 	sha1ToBuildProps, err := getDependenciesDetails(buildinfo.Modules, p.repository, p.servicesManager)
 	for _, module := range buildinfo.Modules {
 		for _, dep := range module.Dependencies {
 			depPropsInfo := sha1ToBuildProps[dep.Sha1]
-			t.AppendRow(table.Row{"", utils.Optional(dep.Id), utils.Optional(depPropsInfo.Build), utils.OptionalVcsUrl(&depPropsInfo.Vcs)})
+			t.AppendRow(table.Row{module.Id, utils.Optional(dep.Id), utils.Optional(depPropsInfo.Build), utils.OptionalVcsUrl(&depPropsInfo.Vcs)})
 		}
 		t.Render()
 	}
@@ -117,11 +117,8 @@ func getDependenciesDetails(bim []buildinfo.Module, repo string, sm artifactory.
 		}
 	}
 	reader, err := getArtifactsPropsBySha1(repo, sha1Set, sm)
-	if err != nil {
+	if err != nil || reader == nil {
 		return
-	}
-	if reader == nil {
-
 	}
 	defer utils.Cleanup(reader.Close, &err)
 	// Update the dependencies build.

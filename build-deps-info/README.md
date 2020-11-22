@@ -1,8 +1,12 @@
 # build-deps-info
 
 ## About this plugin
-Build-deps-info plugin print dependencies details of a specific build name & build number in Artifactory which includes,
-dependency's build-name/build-number and a link to the vcs(source code).
+The build-deps-info plugin prints the dependencies' details of a specific build, which has been previously published to Artifactory. For each dependency of the build, it shows the following information:
+
+  1. Build name and build number of the original build creating this dependency.
+  2. Git URL for the sources.
+
+Note: If a specific dependency hasn't been published to Artifactory as an artifact of another build, the above details will not be available.
 
 ## Installation with JFrog CLI
 Installing the latest version:
@@ -19,27 +23,22 @@ Uninstalling a plugin
 
 ## Usage
 ### Commands
-* print
-    - arguments:
+* show
+    - Arguments:
         - build-name - The name of the build.
         - build-number - The number of the build.
-    - flags:
-        - repo: Search the dependencies' build in a specific Repository **[Default: All Artifactory]**
-    - example:
+    - Flags:
+        - repo: Search in a specific repository **[Default: All Artifactory]**
+        - server-id: Artifactory server ID configured using the config command **[Optional]**
+    - Example:
     ```
-  $ jfrog build-deps-info print  my_build_name 1 --repo=maven-local
-    +---+---------------------------------------------------+---------------+--------------------------------------------------------------------------------------+
-    | # | DEPENDENCY NAME                                   | BUILD         | VCS URL                                                                              |
-    +---+---------------------------------------------------+---------------+--------------------------------------------------------------------------------------+
-    |   | com.jfrog.cli:MavenHelloWorldProject:1.0-SNAPSHOT | mvn-project/2 | https://github.com/jedib0t/go-pretty/commit/61333b7f82d34a6de2a8948538c227092431aee1 |
-    +---+---------------------------------------------------+---------------+--------------------------------------------------------------------------------------+
+  $ jfrog build-deps-info show my_build_name 1 --repo=maven-local
+    +------------------------------------+---------------------------------------------------+---------------+--------------------------------------------------------------------------------------+
+    | MODULE ID                          | DEPENDENCY NAME                                   | BUILD         | VCS URL                                                                              |
+    +------------------------------------+---------------------------------------------------+---------------+--------------------------------------------------------------------------------------+
+    | com.jfrog.cli:project:1.0-SNAPSHOT | com.jfrog.cli:MavenHelloWorldProject:1.0-SNAPSHOT | mvn-project/2 | https://github.com/jedib0t/go-pretty/commit/61333b7f82d34a6de2a8948538c227092431aee1 |
+    +------------------------------------+---------------------------------------------------+---------------+--------------------------------------------------------------------------------------+
   ```
-
-### Environment variables
-None.
-
-## Additional info
-None.
 
 ## Release Notes
 The release notes are available [here](RELEASE.md).
