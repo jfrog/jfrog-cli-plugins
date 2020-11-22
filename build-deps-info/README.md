@@ -1,10 +1,10 @@
 # build-deps-info
 
 ## About this plugin
-The build-deps-info plugin prints the dependencies' details of a specific build, which has been previously published to Artifactory. For each dependency of the build, it show the following information:
+The build-deps-info plugin prints the dependencies' details of a specific build, which has been previously published to Artifactory. For each dependency of the build, it shows the following information:
 
-  1. The build name and build number, of the original build which created this dependency.
-  2. The Git URL for the sources which created this dependency.
+  1. Build name and build number.
+  2. Git URL for the sources.
 
 Note: If a specific dependency hasn't been published to Artifactory as an artifact of another build, the above details will not be available.
 
@@ -28,7 +28,7 @@ Uninstalling a plugin
         - build-name - The name of the build.
         - build-number - The number of the build.
     - Flags:
-        - repo: Search the dependencies' build in a specific Repository **[Default: All Artifactory]**
+        - repo: Search in a specific repository **[Default: All Artifactory]**
         - server-id: Artifactory server ID configured using the config command **[Optional]**
     - Example:
     ```
