@@ -15,11 +15,11 @@ func main() {
 	plugins.PluginMain(components.App{
 		Name:        "build-deps-info",
 		Description: "Print the dependencies build and a link to vcs of a specific build name & build number in Artifactory.",
-		Version:     "v1.0.0",
+		Version:     "v1.1.0",
 		Commands: []components.Command{
 			{
 				Name:        "show",
-				Description: "show the dependencies of a build to the standart output",
+				Description: "Show the details of the build dependencies",
 				Aliases:     []string{"p"},
 				Arguments:   getShowArguments(),
 				Flags:       getShowFlags(),

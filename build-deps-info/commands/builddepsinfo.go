@@ -72,7 +72,7 @@ func (p *BuildDepsInfo) Exec() error {
 	}
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"Module Id", "Dependency name", "BUILD", "vcs url"})
+	t.AppendHeader(table.Row{"Module Id", "Dependency name", "BUILD", "VCS URL"})
 	sha1ToBuildProps, err := getDependenciesDetails(buildinfo.Modules, p.repository, p.servicesManager)
 	for _, module := range buildinfo.Modules {
 		for _, dep := range module.Dependencies {

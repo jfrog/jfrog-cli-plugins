@@ -3,7 +3,7 @@
 ## About this plugin
 The build-deps-info plugin prints the dependencies' details of a specific build, which has been previously published to Artifactory. For each dependency of the build, it shows the following information:
 
-  1. Build name and build number.
+  1. Build name and build number of the original build creating this dependency.
   2. Git URL for the sources.
 
 Note: If a specific dependency hasn't been published to Artifactory as an artifact of another build, the above details will not be available.
@@ -32,7 +32,7 @@ Uninstalling a plugin
         - server-id: Artifactory server ID configured using the config command **[Optional]**
     - Example:
     ```
-  $ jfrog build-deps-info show  my_build_name 1 --repo=maven-local
+  $ jfrog build-deps-info show my_build_name 1 --repo=maven-local
     +------------------------------------+---------------------------------------------------+---------------+--------------------------------------------------------------------------------------+
     | MODULE ID                          | DEPENDENCY NAME                                   | BUILD         | VCS URL                                                                              |
     +------------------------------------+---------------------------------------------------+---------------+--------------------------------------------------------------------------------------+
