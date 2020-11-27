@@ -43,3 +43,6 @@ Note that if Helm or Docker dependencies are found in a remote repository, they
 must be cached. Otherwise, they won't show up in the release bundle. After
 generating a release bundle, the generator will output which dependencies were
 and were not found; missing dependencies are not listed in the bundle.
+
+## Release Notes
+The release notes are available [here](RELEASE.md).
