@@ -20,7 +20,7 @@ func main() {
 			{
 				Name:        "show",
 				Description: "Show the details of the build dependencies",
-				Aliases:     []string{"p"},
+				Aliases:     []string{"s"},
 				Arguments:   getShowArguments(),
 				Flags:       getShowFlags(),
 				EnvVars:     []components.EnvVar{},
