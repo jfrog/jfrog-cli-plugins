@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"testing"
 	"k8s.io/helm/pkg/chartutil"
+	"testing"
 )
 
 func TestHelmToFilespec1(t *testing.T) {

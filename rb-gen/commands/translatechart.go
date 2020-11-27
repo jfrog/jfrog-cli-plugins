@@ -3,14 +3,19 @@ package commands
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	rtcommands "github.com/jfrog/jfrog-cli-core/artifactory/commands"
+	"github.com/jfrog/jfrog-cli-core/artifactory/commands/distribution"
+	"github.com/jfrog/jfrog-cli-core/artifactory/commands/generic"
+	"github.com/jfrog/jfrog-cli-core/artifactory/spec"
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
 	"github.com/jfrog/jfrog-cli-core/utils/config"
 	"github.com/jfrog/jfrog-cli-core/utils/coreutils"
-	"github.com/jfrog/jfrog-cli-core/artifactory/spec"
-	"github.com/jfrog/jfrog-cli-core/artifactory/commands/distribution"
-	"github.com/jfrog/jfrog-cli-core/artifactory/commands/generic"
+	rthttpclient "github.com/jfrog/jfrog-client-go/artifactory/httpclient"
+	servicesutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
+	distributionServicesUtils "github.com/jfrog/jfrog-client-go/distribution/services/utils"
+	clientutils "github.com/jfrog/jfrog-client-go/utils"
 	"github.com/jfrog/jfrog-client-go/utils/errorutils"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"k8s.io/helm/pkg/chartutil"
@@ -20,11 +25,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-	rtcommands "github.com/jfrog/jfrog-cli-core/artifactory/commands"
-	distributionServicesUtils "github.com/jfrog/jfrog-client-go/distribution/services/utils"
-	rthttpclient "github.com/jfrog/jfrog-client-go/artifactory/httpclient"
-	clientutils "github.com/jfrog/jfrog-client-go/utils"
-	servicesutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
 )
 
 const (
@@ -42,12 +42,12 @@ type TranslateChartCommand struct {
 
 func GetReleaseBundleTranslateChartCommand() components.Command {
 	return components.Command{
-		Name:         "from-chart",
-		Description:  "Generate a release bundle from an existing Helm chart.",
-		Aliases:      []string{"fc"},
-		Arguments:    getReleaseBundleTranslateChartArguments(),
-		Flags:        getReleaseBundleTranslateChartFlags(),
-		EnvVars:      []components.EnvVar{},
+		Name:        "from-chart",
+		Description: "Generate a release bundle from an existing Helm chart.",
+		Aliases:     []string{"fc"},
+		Arguments:   getReleaseBundleTranslateChartArguments(),
+		Flags:       getReleaseBundleTranslateChartFlags(),
+		EnvVars:     []components.EnvVar{},
 		Action: func(c *components.Context) error {
 			return releaseBundleTranslateChartCmd(c)
 		},
@@ -70,82 +70,82 @@ func getReleaseBundleTranslateChartArguments() []components.Argument {
 func getReleaseBundleTranslateChartFlags() []components.Flag {
 	return []components.Flag{
 		components.StringFlag{
-			Name:  "url",
+			Name:        "url",
 			Description: "Artifactory URL.",
 		},
 		components.StringFlag{
-			Name:  "dist-url",
+			Name:        "dist-url",
 			Description: "Distribution URL.",
 		},
 		components.StringFlag{
-			Name:  "user",
+			Name:        "user",
 			Description: "Artifactory username.",
 		},
 		components.StringFlag{
-			Name:  "password",
+			Name:        "password",
 			Description: "Artifactory password.",
 		},
 		components.StringFlag{
-			Name:  "apikey",
+			Name:        "apikey",
 			Description: "Artifactory API key.",
 		},
 		components.StringFlag{
-			Name:  "access-token",
+			Name:        "access-token",
 			Description: "Artifactory access token.",
 		},
 		components.StringFlag{
-			Name:  "ssh-passphrase",
+			Name:        "ssh-passphrase",
 			Description: "SSH key passphrase.",
 		},
 		components.StringFlag{
-			Name:  "ssh-key-path",
+			Name:        "ssh-key-path",
 			Description: "SSH key file path.",
 		},
 		components.StringFlag{
-			Name:  "server-id",
+			Name:        "server-id",
 			Description: "Artifactory server ID configured using the config command.",
 		},
 		components.StringFlag{
-			Name: "chart-path",
+			Name:        "chart-path",
 			Description: "Path to a Helm chart in Artifactory, which should be translated to a release bundle.",
-			Mandatory: true,
+			Mandatory:   true,
 		},
 		components.StringFlag{
-			Name: "docker-repo",
+			Name:        "docker-repo",
 			Description: "A Docker repository containing all the Docker images the Helm chart requires.",
-			Mandatory: true,
+			Mandatory:   true,
 		},
 		components.BoolFlag{
-			Name:  "dry-run",
+			Name:        "dry-run",
 			Description: "Set to true to disable communication with JFrog Distribution.",
 		},
 		components.BoolFlag{
-			Name:  "sign",
+			Name:        "sign",
 			Description: "If set to true, automatically signs the release bundle version.",
 		},
 		components.StringFlag{
-			Name:  "desc",
+			Name:        "desc",
 			Description: "Description of the release bundle.",
 		},
 		components.StringFlag{
-			Name:  "release-notes-path",
+			Name:        "release-notes-path",
 			Description: "Path to a file describes the release notes for the release bundle version.",
 		},
 		components.StringFlag{
-			Name:  "release-notes-syntax",
-			Description: "The syntax for the release notes. Can be one of 'markdown', 'asciidoc', or 'plain_text'.",
+			Name:         "release-notes-syntax",
+			Description:  "The syntax for the release notes. Can be one of 'markdown', 'asciidoc', or 'plain_text'.",
 			DefaultValue: "plain_text",
 		},
 		components.StringFlag{
-			Name:  "exclusions",
+			Name:        "exclusions",
 			Description: "Semicolon-separated list of exclusions. Exclusions can include the * and the ? wildcards.",
 		},
 		components.StringFlag{
-			Name:  "passphrase",
+			Name:        "passphrase",
 			Description: "The passphrase for the signing key.",
 		},
 		components.StringFlag{
-			Name:  "repo",
+			Name:        "repo",
 			Description: "A repository name at source Artifactory to store release bundle artifacts in. If not provided, Artifactory will use the default one.",
 		},
 	}
@@ -516,8 +516,8 @@ func createFilespec(chrt *chart.Chart, helmrepo, dockerrepo string) (string, []s
 		splits := strings.SplitN(line, "/", 2)
 		image := splits[len(splits)-1]
 		cname := strings.ReplaceAll(splits[len(splits)-1], ":", "/") + "/"
-		path1, _ := json.Marshal(dockerrepo+"/"+cname)
-		path2, _ := json.Marshal(dockerrepo+"/*/"+cname)
+		path1, _ := json.Marshal(dockerrepo + "/" + cname)
+		path2, _ := json.Marshal(dockerrepo + "/*/" + cname)
 		spec = spec + "{\"pattern\":" + string(path1) + "},"
 		spec = spec + "{\"pattern\":" + string(path2) + "},"
 		flist = append(flist, image)
@@ -526,8 +526,8 @@ func createFilespec(chrt *chart.Chart, helmrepo, dockerrepo string) (string, []s
 	crawlRequirements(deps, chrt)
 	for _, c := range sortChartMap(deps) {
 		cname := c.Metadata.Name + "-" + c.Metadata.Version + ".tgz"
-		path1, _ := json.Marshal(helmrepo+"/"+cname)
-		path2, _ := json.Marshal(helmrepo+"/*/"+cname)
+		path1, _ := json.Marshal(helmrepo + "/" + cname)
+		path2, _ := json.Marshal(helmrepo + "/*/" + cname)
 		spec = spec + "{\"pattern\":" + string(path1) + "},"
 		spec = spec + "{\"pattern\":" + string(path2) + "},"
 		flist = append(flist, cname)
@@ -602,7 +602,7 @@ func extractImages(files map[string]string) map[string]string {
 			}
 			if line[0] == '\'' && line[len(line)-1] == '\'' ||
 				line[0] == '"' && line[len(line)-1] == '"' {
-				line = line[1:len(line)-1]
+				line = line[1 : len(line)-1]
 			}
 			lines[line] = line
 		}
