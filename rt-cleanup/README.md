@@ -6,7 +6,7 @@ It can be used to delete all artifacts that have not been downloaded for the pas
 from a given repository.
 
 **Note:**
-If you're -lanning to clean Docker repositories, this plugin may lead to unexpectedly partial or broken images. It is currently recommended to instead use the following Artifactory [cleanDockerImages](https://github.com/jfrog/artifactory-user-plugins/tree/master/cleanup/cleanDockerImages) user plugin for this purpose.
+If you're planning to clean Docker repositories, this plugin may lead to unexpectedly partial or broken images. It is currently recommended to instead use the following Artifactory [cleanDockerImages](https://github.com/jfrog/artifactory-user-plugins/tree/master/cleanup/cleanDockerImages) user plugin for this purpose.
 
 ## Installation with JFrog CLI
 Installing the latest version:
