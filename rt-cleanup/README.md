@@ -5,6 +5,9 @@ This plugin is a simple Artifactory cleanup plugin.
 It can be used to delete all artifacts that have not been downloaded for the past n time units (both can bu configured)
 from a given repository.
 
+**Note:**
+If you're -lanning to clean Docker repositories, this plugin may lead to unexpectedly partial or broken images. It is currently recommended to instead use the following Artifactory [cleanDockerImages](https://github.com/jfrog/artifactory-user-plugins/tree/master/cleanup/cleanDockerImages) user plugin for this purpose.
+
 ## Installation with JFrog CLI
 Installing the latest version:
 
