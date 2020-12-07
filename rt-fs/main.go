@@ -13,7 +13,7 @@ func main() {
 func getApp() components.App {
 	app := components.App{}
 	app.Name = "rt-fs"
-	app.Description = "Run ls for a given Artifactory path."
+	app.Description = "Run file system commands in Artifactory."
 	app.Version = "v1.1.0"
 	app.Commands = getCommands()
 	return app
