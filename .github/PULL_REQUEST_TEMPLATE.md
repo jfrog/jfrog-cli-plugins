@@ -1,0 +1,3 @@
+- [ ] All plugin's tests passed. If this feature is not already covered by the tests, I added new tests.
+- [ ] I used gofmt for formatting the code before submitting the pull request.
+-----
