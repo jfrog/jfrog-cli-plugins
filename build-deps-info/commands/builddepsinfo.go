@@ -64,11 +64,11 @@ func (p *BuildDepsInfo) Exec() error {
 	biParams := services.NewBuildInfoParams()
 	biParams.BuildName, biParams.BuildNumber = p.buildName, p.buildNumber
 	buildinfo, found, err := p.servicesManager.GetBuildInfo(biParams)
-	if err != nil || !found {
+	if err != nil {
 		return err
 	}
-	if buildinfo.BuildInfo.Name == "" || buildinfo.BuildInfo.Number == "" {
-		return errors.New("Build '" + p.buildName + "/" + p.buildNumber + "' not found")
+	if !found {
+		return errors.New("Build '" + p.buildName + "/" + p.buildNumber + "' was not found")
 	}
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
