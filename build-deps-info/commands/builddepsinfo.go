@@ -63,18 +63,18 @@ func (p *BuildDepsInfo) SetServicesManager(servicesManager artifactory.Artifacto
 func (p *BuildDepsInfo) Exec() error {
 	biParams := services.NewBuildInfoParams()
 	biParams.BuildName, biParams.BuildNumber = p.buildName, p.buildNumber
-	buildinfo, err := p.servicesManager.GetBuildInfo(biParams)
-	if err != nil {
+	buildinfo, found, err := p.servicesManager.GetBuildInfo(biParams)
+	if err != nil || !found {
 		return err
 	}
-	if buildinfo.Name == "" || buildinfo.Number == "" {
+	if buildinfo.BuildInfo.Name == "" || buildinfo.BuildInfo.Number == "" {
 		return errors.New("Build '" + p.buildName + "/" + p.buildNumber + "' not found")
 	}
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Module Id", "Dependency name", "BUILD", "VCS URL"})
-	sha1ToBuildProps, err := getDependenciesDetails(buildinfo.Modules, p.repository, p.servicesManager)
-	for _, module := range buildinfo.Modules {
+	sha1ToBuildProps, err := getDependenciesDetails(buildinfo.BuildInfo.Modules, p.repository, p.servicesManager)
+	for _, module := range buildinfo.BuildInfo.Modules {
 		for _, dep := range module.Dependencies {
 			depPropsInfo := sha1ToBuildProps[dep.Sha1]
 			t.AppendRow(table.Row{module.Id, utils.Optional(dep.Id), utils.Optional(depPropsInfo.Build), utils.OptionalVcsUrl(&depPropsInfo.Vcs)})
