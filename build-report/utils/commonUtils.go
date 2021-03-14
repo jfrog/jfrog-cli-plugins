@@ -2,8 +2,9 @@ package utils
 
 import (
 	"errors"
-	"github.com/jfrog/jfrog-cli-core/artifactory/commands"
+
 	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
+	"github.com/jfrog/jfrog-cli-core/common/commands"
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
 	"github.com/jfrog/jfrog-cli-core/utils/config"
 	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
@@ -14,7 +15,7 @@ import (
 const ServerIdFlag = "server-id"
 
 // Returns the Artifactory Details of the provided server-id, or the default one.
-func GetRtDetails(c *components.Context) (*config.ArtifactoryDetails, error) {
+func GetRtDetails(c *components.Context) (*config.ServerDetails, error) {
 	serverId := c.GetStringFlagValue(ServerIdFlag)
 	details, err := commands.GetConfig(serverId, false)
 	if err != nil {
@@ -45,7 +46,7 @@ func GetBuildDetails(c *components.Context) (buildName, buildNumber string, err 
 }
 
 // Get build info from Artifactory.
-func GetBuildInfo(rtDetails *config.ArtifactoryDetails, buildName, buildNumber string) (*buildinfo.PublishedBuildInfo, bool, error) {
+func GetBuildInfo(rtDetails *config.ServerDetails, buildName, buildNumber string) (*buildinfo.PublishedBuildInfo, bool, error) {
 	servicesManager, err := utils.CreateServiceManager(rtDetails, false)
 	if err != nil {
 		return nil, false, err

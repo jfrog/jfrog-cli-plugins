@@ -4,8 +4,8 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/jfrog/jfrog-cli-core/artifactory/commands"
 	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
+	"github.com/jfrog/jfrog-cli-core/common/commands"
 	"github.com/jfrog/jfrog-cli-core/plugins"
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
 	builddepsinfo "github.com/jfrog/jfrog-cli-plugins/build-deps-info/commands"

@@ -3,18 +3,19 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"github.com/jfrog/jfrog-cli-core/utils/config"
-	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
-	"github.com/jfrog/jfrog-client-go/artifactory/httpclient"
-	servicesutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
-	clientutils "github.com/jfrog/jfrog-client-go/utils"
-	"github.com/jfrog/jfrog-client-go/utils/log"
 	"net/http"
 	"path"
+
+	"github.com/jfrog/jfrog-cli-core/utils/config"
+	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
+	servicesutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
+	"github.com/jfrog/jfrog-client-go/http/jfroghttpclient"
+	clientutils "github.com/jfrog/jfrog-client-go/utils"
+	"github.com/jfrog/jfrog-client-go/utils/log"
 )
 
 // Get builds diff from Artifactory.
-func GetBuildDiff(rtDetails *config.ArtifactoryDetails, buildName, buildNumber, buildNumberDiff string) (*BuildDiff, error) {
+func GetBuildDiff(rtDetails *config.ServerDetails, buildName, buildNumber, buildNumberDiff string) (*BuildDiff, error) {
 	if buildNumberDiff == "" {
 		return nil, nil
 	}
@@ -24,7 +25,7 @@ func GetBuildDiff(rtDetails *config.ArtifactoryDetails, buildName, buildNumber, 
 		return nil, err
 	}
 	httpClientsDetails := artAuth.CreateHttpClientDetails()
-	client, err := httpclient.ArtifactoryClientBuilder().SetServiceDetails(&artAuth).Build()
+	client, err := jfroghttpclient.JfrogClientBuilder().SetServiceDetails(&artAuth).Build()
 	if err != nil {
 		return nil, err
 	}

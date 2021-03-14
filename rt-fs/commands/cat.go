@@ -61,7 +61,7 @@ func doCat(c *commonConfiguration) error {
 
 	// Download file
 	downloadCmd := generic.NewDownloadCommand().SetConfiguration(createDownloadConfiguration()).SetBuildConfiguration(new(utils.BuildConfiguration))
-	downloadCmd.SetRtDetails(c.details).SetSpec(createDownloadSpec(c, target.Name()))
+	downloadCmd.SetServerDetails(c.details).SetSpec(createDownloadSpec(c, target.Name()))
 	if err := commands.Exec(downloadCmd); err != nil {
 		return err
 	}

@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jfrog/jfrog-cli-core/artifactory/commands"
 	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
+	"github.com/jfrog/jfrog-cli-core/common/commands"
 
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
 	"github.com/jfrog/jfrog-cli-core/utils/config"
@@ -35,7 +35,7 @@ func getCommonFlags() []components.Flag {
 }
 
 type commonConfiguration struct {
-	details *config.ArtifactoryDetails
+	details *config.ServerDetails
 	path    string
 }
 
@@ -70,7 +70,7 @@ func checkInputs(c *components.Context) error {
 }
 
 // Returns the Artifactory Details of the provided server-id, or the default one.
-func getRtDetails(c *components.Context) (*config.ArtifactoryDetails, error) {
+func getRtDetails(c *components.Context) (*config.ServerDetails, error) {
 	details, err := commands.GetConfig(c.GetStringFlagValue("server-id"), false)
 	if err != nil {
 		return nil, err
