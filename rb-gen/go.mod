@@ -10,8 +10,8 @@ require (
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
-	github.com/jfrog/jfrog-cli-core v1.2.4
-	github.com/jfrog/jfrog-client-go v0.17.4
+	github.com/jfrog/jfrog-cli-core v1.4.1
+	github.com/jfrog/jfrog-client-go v0.20.1
 	github.com/mitchellh/copystructure v1.0.0 // indirect
 	k8s.io/apimachinery v0.19.2 // indirect
 	k8s.io/helm v2.16.12+incompatible
