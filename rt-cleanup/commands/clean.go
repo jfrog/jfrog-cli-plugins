@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jfrog/jfrog-cli-core/artifactory/commands"
 	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
+	"github.com/jfrog/jfrog-cli-core/common/commands"
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
 	"github.com/jfrog/jfrog-cli-core/utils/config"
 	searchutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
@@ -85,7 +85,7 @@ func cleanCmd(c *components.Context) error {
 	return cleanArtifcats(conf, rtDetails)
 }
 
-func cleanArtifcats(config *cleanConfiguration, artifactoryDetails *config.ArtifactoryDetails) error {
+func cleanArtifcats(config *cleanConfiguration, artifactoryDetails *config.ServerDetails) error {
 	// Search for artifacts to delete using AQL
 	aqlQuery := buildAQL(config)
 	authConfig, err := artifactoryDetails.CreateArtAuthConfig()
@@ -150,7 +150,7 @@ func parseTimeFlags(noDownloadedTime, timeUnit string) (timeString string, err e
 }
 
 /// Returns the Artifactory Details of the provided server-id, or the default one.
-func getRtDetails(c *components.Context) (*config.ArtifactoryDetails, error) {
+func getRtDetails(c *components.Context) (*config.ServerDetails, error) {
 	serverId := c.GetStringFlagValue("server-id")
 	details, err := commands.GetConfig(serverId, false)
 	if err != nil {

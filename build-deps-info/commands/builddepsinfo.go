@@ -12,8 +12,6 @@ import (
 	"github.com/jfrog/jfrog-client-go/utils/log"
 
 	"github.com/jfrog/gofrog/parallel"
-	"github.com/jfrog/jfrog-cli-core/artifactory/commands"
-	"github.com/jfrog/jfrog-cli-core/utils/config"
 	"github.com/jfrog/jfrog-client-go/artifactory"
 	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	"github.com/jfrog/jfrog-client-go/artifactory/services"
@@ -22,6 +20,10 @@ import (
 
 	"github.com/jfrog/jfrog-client-go/utils/errorutils"
 )
+
+func init() {
+	log.SetLogger(log.NewLogger(log.INFO, nil))
+}
 
 // Artifactory has a max number of character for a single request,
 // therefore we limit the maximum number of sha1 for a single AQL request.
@@ -82,23 +84,6 @@ func (p *BuildDepsInfo) Exec() error {
 		t.Render()
 	}
 	return nil
-}
-
-// Returns the Artifactory Details of the provided server-id, or the default one.
-func getRtDetails(serverId string) (*config.ArtifactoryDetails, error) {
-	details, err := commands.GetConfig(serverId, false)
-	if err != nil {
-		return nil, err
-	}
-	if details.Url == "" {
-		return nil, errors.New("no server-id was found, or the server-id has no url")
-	}
-	details.Url = clientutils.AddTrailingSlashIfNeeded(details.Url)
-	err = config.CreateInitialRefreshableTokensIfNeeded(details)
-	if err != nil {
-		return nil, err
-	}
-	return details, nil
 }
 
 type DependencyProps struct {

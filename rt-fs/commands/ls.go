@@ -63,7 +63,7 @@ func doSearch(c *commonConfiguration) (*content.ContentReader, error) {
 	// Run the first search
 	searchCmd := generic.NewSearchCommand()
 	searchSpec := spec.NewBuilder().Pattern(c.path).IncludeDirs(true).BuildSpec()
-	searchCmd.SetRtDetails(c.details).SetSpec(searchSpec)
+	searchCmd.SetServerDetails(c.details).SetSpec(searchSpec)
 	if err := commands.Exec(searchCmd); err != nil {
 		return nil, err
 	}

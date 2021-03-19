@@ -2,6 +2,8 @@ package commands
 
 import (
 	"errors"
+	"os"
+
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
@@ -11,7 +13,6 @@ import (
 	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	"github.com/jfrog/jfrog-client-go/utils/log"
 	"golang.org/x/crypto/ssh/terminal"
-	"os"
 )
 
 func GetViewCommand() components.Command {
@@ -92,7 +93,7 @@ func viewCmd(c *components.Context) error {
 	return doView(rtDetails, buildName, buildNumber, buildNumberDiff)
 }
 
-func doView(rtDetails *config.ArtifactoryDetails, buildName, buildNumber, buildNumberDiff string) error {
+func doView(rtDetails *config.ServerDetails, buildName, buildNumber, buildNumberDiff string) error {
 	publishedBuildInfo, found, err := utils.GetBuildInfo(rtDetails, buildName, buildNumber)
 	if err != nil {
 		return err
