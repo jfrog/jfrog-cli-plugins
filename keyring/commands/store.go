@@ -10,6 +10,10 @@ import (
 
 const ServiceId = "keyring-jfrog-cli-plugin"
 
+func init() {
+	log.SetLogger(log.NewLogger(log.INFO, nil))
+}
+
 func GetStoreCommand() components.Command {
 	return components.Command{
 		Name:        "store",

@@ -25,7 +25,7 @@ func GetBuildDiff(rtDetails *config.ServerDetails, buildName, buildNumber, build
 		return nil, err
 	}
 	httpClientsDetails := artAuth.CreateHttpClientDetails()
-	client, err := jfroghttpclient.JfrogClientBuilder().SetServiceDetails(&artAuth).Build()
+	client, err := jfroghttpclient.JfrogClientBuilder().Build()
 	if err != nil {
 		return nil, err
 	}

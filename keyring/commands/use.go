@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	gofrogio "github.com/jfrog/gofrog/io"
-	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
 	"github.com/jfrog/jfrog-cli-core/plugins/components"
 	"github.com/zalando/go-keyring"
 	"io"
@@ -14,10 +13,10 @@ import (
 
 func GetUseCommand() components.Command {
 	return components.Command{
-		Name:        "use",
-		Description: "Use the store Artifactory configuration for a JFrog CLI command.",
-		Aliases:     []string{"u"},
-		Arguments:   getUseArguments(),
+		Name:            "use",
+		Description:     "Use the store Artifactory configuration for a JFrog CLI command.",
+		Aliases:         []string{"u"},
+		Arguments:       getUseArguments(),
 		SkipFlagParsing: true,
 		Action: func(c *components.Context) error {
 			return useCmd(c)
@@ -50,17 +49,14 @@ func useCmd(c *components.Context) error {
 		return err
 	}
 
-	args, err := buildArgs(c.Arguments, conf)
-	if err != nil {
-		return err
-	}
+	args := buildArgs(c.Arguments, conf)
 
 	cmd := new(Cmd)
 	cmd.Args = args
 	return gofrogio.RunCmd(cmd)
 }
 
-func buildArgs(args []string, conf *storeConfiguration) ([]string, error) {
+func buildArgs(args []string, conf *storeConfiguration) []string {
 	// Remove the first argument, which is the server ID.
 	args = args[1:]
 	// Add "rt" at the beginning.
@@ -68,10 +64,8 @@ func buildArgs(args []string, conf *storeConfiguration) ([]string, error) {
 
 	// Add the connection details flags.
 	index := findFirstFlagIndex(args)
-	leftSection:= append(args[0:index], []string{"--url", conf.Url, "--user", conf.User, "--password", conf.Password}...)
-	args = append(leftSection, args[index:]...)
-
-	return utils.ParseArgs(args)
+	leftSection := append(args[0:index], []string{"--url", conf.Url, "--user", conf.User, "--password", conf.Password}...)
+	return append(leftSection, args[index:]...)
 }
 
 // This function receives an array of command args, and searches for the first argument, which is
@@ -85,13 +79,13 @@ func findFirstFlagIndex(args []string) int {
 			return i
 		}
 	}
-	return i+1
+	return i + 1
 }
 
 type Cmd struct {
-	Args         []string
-	StrWriter    io.WriteCloser
-	ErrWriter    io.WriteCloser
+	Args      []string
+	StrWriter io.WriteCloser
+	ErrWriter io.WriteCloser
 }
 
 func (c *Cmd) GetCmd() *exec.Cmd {
@@ -109,4 +103,3 @@ func (c *Cmd) GetStdWriter() io.WriteCloser {
 func (c *Cmd) GetErrWriter() io.WriteCloser {
 	return c.ErrWriter
 }
-

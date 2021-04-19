@@ -92,8 +92,10 @@ func cleanArtifcats(config *cleanConfiguration, artifactoryDetails *config.Serve
 	if err != nil {
 		return err
 	}
-	rtConf := new(searchutils.CommonConfImpl)
-	rtConf.SetArtifactoryDetails(authConfig)
+	rtConf, err := searchutils.NewCommonConfImpl(authConfig)
+	if err != nil {
+		return err
+	}
 	resultReader, err := searchutils.ExecAqlSaveToFile(aqlQuery, rtConf)
 	if err != nil {
 		return err

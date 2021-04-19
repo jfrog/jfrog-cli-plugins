@@ -6,7 +6,7 @@ import (
 )
 
 func TestFindFirstFlagIndex(t *testing.T) {
-	tests := []testFindIndex {
+	tests := []testFindIndex{
 		{args: []string{"rt", "ping"}, index: 2},
 		{args: []string{"rt", "u", "--flat"}, index: 2},
 		{args: []string{"rt", "u", "--flat", "./*"}, index: 2},
@@ -20,13 +20,13 @@ func TestFindFirstFlagIndex(t *testing.T) {
 }
 
 type testFindIndex struct {
-	args    []string
-	index     int
+	args  []string
+	index int
 }
 
 func TestBuildArgs(t *testing.T) {
 	conf := getTestConf()
-	tests := []testBuildArgs {
+	tests := []testBuildArgs{
 		{inArgs: []string{"rt", "ping"}, outArgs: []string{"rt", "ping", "--url", conf.Url, "--user", conf.User, "--password", conf.Password}},
 		{inArgs: []string{"rt", "u", "--flat"}, outArgs: []string{"rt", "u", "--url", conf.Url, "--user", conf.User, "--password", conf.Password, "--flat"}},
 		{inArgs: []string{"rt", "u", "--flat", "./*"}, outArgs: []string{"rt", "u", "--url", conf.Url, "--user", conf.User, "--password", conf.Password, "--flat", "./*"}},
@@ -35,13 +35,12 @@ func TestBuildArgs(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		args, err := buildArgs(test.inArgs, &conf)
-		assert.NoError(t, err)
+		args := buildArgs(test.inArgs, &conf)
 		assert.True(t, equals(test.outArgs, args))
 	}
 }
 
 type testBuildArgs struct {
-	inArgs    []string
-	outArgs   []string
+	inArgs  []string
+	outArgs []string
 }
