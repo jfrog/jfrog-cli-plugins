@@ -14,7 +14,7 @@ func getApp() components.App {
 	app := components.App{}
 	app.Name = "rt-fs"
 	app.Description = "Run file system commands in Artifactory."
-	app.Version = "v1.1.0"
+	app.Version = "v1.1.1"
 	app.Commands = getCommands()
 	return app
 }
