@@ -31,5 +31,5 @@ jobs:
           remote-organization-name: 'jfrog'
           remote-repository-name: 'jfrog-signed-clas'
           # branch should not be protected
-          branch: 'main'
+          branch: 'master'
           allowlist: bot*
