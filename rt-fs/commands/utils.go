@@ -75,10 +75,10 @@ func getRtDetails(c *components.Context) (*config.ServerDetails, error) {
 	if err != nil {
 		return nil, err
 	}
-	if details.Url == "" {
-		return nil, errors.New("no server-id was found, or the server-id has no url")
+	if details.ArtifactoryUrl == "" {
+		return nil, errors.New("no server-id was found, or the server-id has no Artifactory url.")
 	}
-	details.Url = clientutils.AddTrailingSlashIfNeeded(details.Url)
+	details.ArtifactoryUrl = clientutils.AddTrailingSlashIfNeeded(details.ArtifactoryUrl)
 	err = config.CreateInitialRefreshableTokensIfNeeded(details)
 	if err != nil {
 		return nil, err
