@@ -4,8 +4,8 @@ go 1.14
 
 require (
 	github.com/jedib0t/go-pretty/v6 v6.0.5
-	github.com/jfrog/jfrog-cli-core v1.7.1
-	github.com/jfrog/jfrog-client-go v0.23.1
+	github.com/jfrog/jfrog-cli-core v1.7.2
+	github.com/jfrog/jfrog-client-go v0.24.0
 	github.com/stretchr/testify v1.6.1
 	golang.org/x/crypto v0.0.0-20201208171446-5f87f3452ae9
 )
