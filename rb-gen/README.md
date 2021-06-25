@@ -4,7 +4,11 @@
 
 This plugin is designed to simplify interaction with release bundles, by
 generating them from other formats. Currently, it can generate release bundles
-from Helm charts.
+from Helm v2 charts.
+
+## Helm v3 support
+
+Currently this plugin does not support Helm v3 with api v2 templates.
 
 ## Installation with JFrog CLI
 
@@ -36,9 +40,12 @@ Uninstalling a plugin
       dependency Docker images should be available in this repository.
   - Example:
     ``` shell
-    jfrog rb-gen from-chart --chart-path=<chart path> --docker-repo=<Docker repo name> <bundle name> <bundle version>
+    jfrog rb-gen from-chart --user=<User> --apikey=<ApiKey> --url=<Artifactory Url> --dist-url=<Distribution Url> --chart-path=<chart path> --docker-repo=<Docker repo name> <bundle name> <bundle version>
     ```
-
+  - Example assuming two virtual repos "helm" + "docker" containing all docker and helm artifacts.
+    ``` shell 
+    jfrog rb-gen from-chart --user=User --apikey=ApiKey --url=https://artifactory.example.com/artifactory --dist-url=https://artifactory.example.com/distribution --chart-path=helm/my-helm-chart-1.0.0.tgz --docker-repo=docker release-bundle-name 1.0.0
+    ```
 Note that if Helm or Docker dependencies are found in a remote repository, they
 must be cached. Otherwise, they won't show up in the release bundle. After
 generating a release bundle, the generator will output which dependencies were
