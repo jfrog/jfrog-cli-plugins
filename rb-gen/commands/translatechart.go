@@ -4,27 +4,30 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	rtcommands "github.com/jfrog/jfrog-cli-core/artifactory/commands"
-	"github.com/jfrog/jfrog-cli-core/artifactory/commands/distribution"
-	"github.com/jfrog/jfrog-cli-core/artifactory/commands/generic"
-	"github.com/jfrog/jfrog-cli-core/artifactory/spec"
-	"github.com/jfrog/jfrog-cli-core/plugins/components"
-	"github.com/jfrog/jfrog-cli-core/utils/config"
-	"github.com/jfrog/jfrog-cli-core/utils/coreutils"
-	rthttpclient "github.com/jfrog/jfrog-client-go/artifactory/httpclient"
-	servicesutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
-	distributionServicesUtils "github.com/jfrog/jfrog-client-go/distribution/services/utils"
-	clientutils "github.com/jfrog/jfrog-client-go/utils"
-	"github.com/jfrog/jfrog-client-go/utils/errorutils"
 	"io"
 	"io/ioutil"
-	"k8s.io/helm/pkg/chartutil"
-	"k8s.io/helm/pkg/proto/hapi/chart"
-	"k8s.io/helm/pkg/renderutil"
 	"net/http"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	rtcommands "github.com/jfrog/jfrog-cli-core/artifactory/commands"
+	"github.com/jfrog/jfrog-cli-core/artifactory/commands/distribution"
+	"github.com/jfrog/jfrog-cli-core/artifactory/commands/generic"
+	"github.com/jfrog/jfrog-cli-core/artifactory/spec"
+	"github.com/jfrog/jfrog-cli-core/common/commands"
+
+	"github.com/jfrog/jfrog-cli-core/plugins/components"
+	"github.com/jfrog/jfrog-cli-core/utils/config"
+	"github.com/jfrog/jfrog-cli-core/utils/coreutils"
+	servicesutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
+	distributionServicesUtils "github.com/jfrog/jfrog-client-go/distribution/services/utils"
+	jfroghttpclient "github.com/jfrog/jfrog-client-go/http/jfroghttpclient"
+	clientutils "github.com/jfrog/jfrog-client-go/utils"
+	"github.com/jfrog/jfrog-client-go/utils/errorutils"
+	"k8s.io/helm/pkg/chartutil"
+	"k8s.io/helm/pkg/proto/hapi/chart"
+	"k8s.io/helm/pkg/renderutil"
 )
 
 const (
@@ -33,7 +36,7 @@ const (
 )
 
 type TranslateChartCommand struct {
-	rtDetails            *config.ArtifactoryDetails
+	serverDetails        *config.ServerDetails
 	releaseBundlesParams distributionServicesUtils.ReleaseBundleParams
 	sourceChartPath      string
 	dockerRepo           string
@@ -166,7 +169,7 @@ func releaseBundleTranslateChartCmd(c *components.Context) error {
 	if err != nil {
 		return err
 	}
-	translateChartCmd.SetRtDetails(rtDetails).SetReleaseBundleCreateParams(params).SetSourceChartPath(chartpath).SetDockerRepo(dockerrepo).SetDryRun(c.GetBoolFlagValue("dry-run"))
+	translateChartCmd.SetServerDetails(rtDetails).SetReleaseBundleCreateParams(params).SetSourceChartPath(chartpath).SetDockerRepo(dockerrepo).SetDryRun(c.GetBoolFlagValue("dry-run"))
 	return rtcommands.Exec(translateChartCmd)
 }
 
@@ -214,7 +217,7 @@ func populateReleaseNotesSyntax(c *components.Context) (distributionServicesUtil
 	return distributionServicesUtils.PlainText, nil
 }
 
-func createArtifactoryDetailsByFlags(c *components.Context) (*config.ArtifactoryDetails, error) {
+func createArtifactoryDetailsByFlags(c *components.Context) (*config.ServerDetails, error) {
 	artDetails, err := createArtifactoryDetails(c, true)
 	if err != nil {
 		return nil, err
@@ -229,7 +232,7 @@ func createArtifactoryDetailsByFlags(c *components.Context) (*config.Artifactory
 	return artDetails, nil
 }
 
-func createArtifactoryDetails(c *components.Context, includeConfig bool) (details *config.ArtifactoryDetails, err error) {
+func createArtifactoryDetails(c *components.Context, includeConfig bool) (details *config.ServerDetails, err error) {
 	if includeConfig {
 		details, err := offerConfig(c)
 		if err != nil {
@@ -239,7 +242,7 @@ func createArtifactoryDetails(c *components.Context, includeConfig bool) (detail
 			return details, err
 		}
 	}
-	details = new(config.ArtifactoryDetails)
+	details = new(config.ServerDetails)
 	details.Url = c.GetStringFlagValue("url")
 	details.DistributionUrl = c.GetStringFlagValue("dist-url")
 	details.ApiKey = c.GetStringFlagValue("apikey")
@@ -259,7 +262,7 @@ func createArtifactoryDetails(c *components.Context, includeConfig bool) (detail
 	}
 
 	if includeConfig && !credentialsChanged(details) {
-		confDetails, err := rtcommands.GetConfig(details.ServerId, false)
+		confDetails, err := commands.GetConfig(details.ServerId, false)
 		if err != nil {
 			return nil, err
 		}
@@ -308,9 +311,9 @@ func createArtifactoryDetails(c *components.Context, includeConfig bool) (detail
 	return
 }
 
-func offerConfig(c *components.Context) (*config.ArtifactoryDetails, error) {
+func offerConfig(c *components.Context) (*config.ServerDetails, error) {
 	var exists bool
-	exists, err := config.IsArtifactoryConfExists()
+	exists, err := config.IsServerConfExists()
 	if err != nil || exists {
 		return nil, err
 	}
@@ -324,7 +327,7 @@ func offerConfig(c *components.Context) (*config.ArtifactoryDetails, error) {
 		return nil, err
 	}
 	if !offerConfig {
-		config.SaveArtifactoryConf(make([]*config.ArtifactoryDetails, 0))
+		config.SaveServersConf(make([]*config.ServerDetails, 0))
 		return nil, nil
 	}
 
@@ -335,7 +338,7 @@ func offerConfig(c *components.Context) (*config.ArtifactoryDetails, error) {
 		"Configure now?", OfferConfig)
 	confirmed := InteractiveConfirm(msg)
 	if !confirmed {
-		config.SaveArtifactoryConf(make([]*config.ArtifactoryDetails, 0))
+		config.SaveServersConf(make([]*config.ServerDetails, 0))
 		return nil, nil
 	}
 	details, err := createArtifactoryDetails(c, false)
@@ -343,13 +346,13 @@ func offerConfig(c *components.Context) (*config.ArtifactoryDetails, error) {
 		return nil, err
 	}
 	encPassword := c.GetBoolFlagValue("enc-password")
-	configCmd := rtcommands.NewConfigCommand().SetDefaultDetails(details).SetInteractive(true).SetEncPassword(encPassword)
+	configCmd := commands.NewConfigCommand().SetDefaultDetails(details).SetInteractive(true).SetEncPassword(encPassword)
 	err = configCmd.Config()
 	if err != nil {
 		return nil, err
 	}
 
-	return configCmd.RtDetails()
+	return configCmd.ServerDetails()
 }
 
 func InteractiveConfirm(message string) bool {
@@ -364,12 +367,12 @@ func confirmAnswer(answer string) bool {
 	return answer == "y" || answer == "yes"
 }
 
-func credentialsChanged(details *config.ArtifactoryDetails) bool {
+func credentialsChanged(details *config.ServerDetails) bool {
 	return details.Url != "" || details.User != "" || details.Password != "" ||
 		details.ApiKey != "" || details.SshKeyPath != "" || details.AccessToken != ""
 }
 
-func isAuthMethodSet(details *config.ArtifactoryDetails) bool {
+func isAuthMethodSet(details *config.ServerDetails) bool {
 	return (details.User != "" && details.Password != "") || details.SshKeyPath != "" || details.ApiKey != "" || details.AccessToken != ""
 }
 
@@ -377,8 +380,8 @@ func NewTranslateChartCommand() *TranslateChartCommand {
 	return &TranslateChartCommand{}
 }
 
-func (tc *TranslateChartCommand) SetRtDetails(rtDetails *config.ArtifactoryDetails) *TranslateChartCommand {
-	tc.rtDetails = rtDetails
+func (tc *TranslateChartCommand) SetServerDetails(rtDetails *config.ServerDetails) *TranslateChartCommand {
+	tc.serverDetails = rtDetails
 	return tc
 }
 
@@ -403,7 +406,7 @@ func (tc *TranslateChartCommand) SetDryRun(dryRun bool) *TranslateChartCommand {
 }
 
 func (tc *TranslateChartCommand) Run() error {
-	body, err := readFileFromArtifactory(tc.rtDetails, tc.sourceChartPath)
+	body, err := readFileFromArtifactory(tc.serverDetails, tc.sourceChartPath)
 	if err != nil {
 		return err
 	}
@@ -422,7 +425,7 @@ func (tc *TranslateChartCommand) Run() error {
 		return err
 	}
 	createBundle := distribution.NewReleaseBundleCreateCommand()
-	createBundle.SetRtDetails(tc.rtDetails)
+	createBundle.SetServerDetails(tc.serverDetails)
 	createBundle.SetReleaseBundleCreateParams(tc.releaseBundlesParams)
 	createBundle.SetSpec(specfiles)
 	createBundle.SetDryRun(tc.dryRun)
@@ -430,7 +433,7 @@ func (tc *TranslateChartCommand) Run() error {
 	if err != nil {
 		return err
 	}
-	actual, err := checkExisting(tc.rtDetails, specfiles)
+	actual, err := checkExisting(tc.serverDetails, specfiles)
 	if err != nil {
 		return err
 	}
@@ -463,8 +466,8 @@ func (tc *TranslateChartCommand) Run() error {
 	return nil
 }
 
-func (tc *TranslateChartCommand) RtDetails() (*config.ArtifactoryDetails, error) {
-	return tc.rtDetails, nil
+func (tc *TranslateChartCommand) ServerDetails() (*config.ServerDetails, error) {
+	return tc.serverDetails, nil
 }
 
 func (tc *TranslateChartCommand) CommandName() string {
@@ -478,7 +481,7 @@ func extractRepo(path string) string {
 	return strings.SplitN(path, "/", 2)[0]
 }
 
-func readFileFromArtifactory(artDetails *config.ArtifactoryDetails, downloadPath string) (io.ReadCloser, error) {
+func readFileFromArtifactory(artDetails *config.ServerDetails, downloadPath string) (io.ReadCloser, error) {
 	downloadUrl := urlAppend(artDetails.Url, downloadPath)
 	auth, err := artDetails.CreateArtAuthConfig()
 	if err != nil {
@@ -488,7 +491,7 @@ func readFileFromArtifactory(artDetails *config.ArtifactoryDetails, downloadPath
 	if err != nil {
 		return nil, err
 	}
-	client, err := rthttpclient.ArtifactoryClientBuilder().
+	client, err := jfroghttpclient.JfrogClientBuilder().
 		SetCertificatesPath(securityDir).
 		SetInsecureTls(artDetails.InsecureTls).
 		SetServiceDetails(&auth).
@@ -537,10 +540,10 @@ func createFilespec(chrt *chart.Chart, helmrepo, dockerrepo string) (string, []s
 	return spec, flist, nil
 }
 
-func checkExisting(rtDetails *config.ArtifactoryDetails, spec *spec.SpecFiles) ([]string, error) {
+func checkExisting(rtDetails *config.ServerDetails, spec *spec.SpecFiles) ([]string, error) {
 	flist := make([]string, 0)
 	cmd := generic.NewSearchCommand()
-	cmd.SetRtDetails(rtDetails).SetSpec(spec)
+	cmd.SetServerDetails(rtDetails).SetSpec(spec)
 	results, err := cmd.Search()
 	if err != nil {
 		return flist, err
