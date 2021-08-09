@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
-	"github.com/jfrog/jfrog-cli-core/common/commands"
-	"github.com/jfrog/jfrog-cli-core/plugins/components"
-	"github.com/jfrog/jfrog-cli-core/utils/config"
+	"github.com/jfrog/jfrog-cli-core/v2/artifactory/utils"
+	"github.com/jfrog/jfrog-cli-core/v2/common/commands"
+	"github.com/jfrog/jfrog-cli-core/v2/plugins/components"
+	"github.com/jfrog/jfrog-cli-core/v2/utils/config"
 	searchutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
 	clientutils "github.com/jfrog/jfrog-client-go/utils"
 )
@@ -103,7 +103,7 @@ func cleanArtifcats(config *cleanConfiguration, artifactoryDetails *config.Serve
 	defer resultReader.Close()
 
 	// Delete the artifacts we found
-	serviceManager, err := utils.CreateServiceManager(artifactoryDetails, false)
+	serviceManager, err := utils.CreateServiceManager(artifactoryDetails, -1, false)
 	if err != nil {
 		return err
 	}

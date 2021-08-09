@@ -7,19 +7,18 @@ import (
 	"os"
 	"strings"
 
-	"github.com/jfrog/jfrog-cli-core/artifactory/commands/generic"
-	"github.com/jfrog/jfrog-cli-core/artifactory/spec"
-	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
-	"github.com/jfrog/jfrog-cli-core/common/commands"
+	"github.com/jfrog/jfrog-cli-core/v2/artifactory/commands/generic"
+	"github.com/jfrog/jfrog-cli-core/v2/artifactory/utils"
+	"github.com/jfrog/jfrog-cli-core/v2/common/commands"
+	"github.com/jfrog/jfrog-cli-core/v2/common/spec"
 	clientutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
 
-	"github.com/jfrog/jfrog-cli-core/plugins/components"
+	"github.com/jfrog/jfrog-cli-core/v2/plugins/components"
 )
 
 const (
 	downloadThreads      = 1
 	downloadMinSplitSize = 5120
-	downloadRetries      = 3
 	downloadSplitCount   = 3
 )
 
@@ -85,7 +84,6 @@ func createDownloadConfiguration() *utils.DownloadConfiguration {
 	return &utils.DownloadConfiguration{
 		Threads:      downloadThreads,
 		MinSplitSize: downloadMinSplitSize,
-		Retries:      downloadRetries,
 		SplitCount:   downloadSplitCount,
 	}
 }

@@ -3,10 +3,10 @@ package utils
 import (
 	"errors"
 
-	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
-	"github.com/jfrog/jfrog-cli-core/common/commands"
-	"github.com/jfrog/jfrog-cli-core/plugins/components"
-	"github.com/jfrog/jfrog-cli-core/utils/config"
+	"github.com/jfrog/jfrog-cli-core/v2/artifactory/utils"
+	"github.com/jfrog/jfrog-cli-core/v2/common/commands"
+	"github.com/jfrog/jfrog-cli-core/v2/plugins/components"
+	"github.com/jfrog/jfrog-cli-core/v2/utils/config"
 	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	"github.com/jfrog/jfrog-client-go/artifactory/services"
 	clientutils "github.com/jfrog/jfrog-client-go/utils"
@@ -47,7 +47,7 @@ func GetBuildDetails(c *components.Context) (buildName, buildNumber string, err 
 
 // Get build info from Artifactory.
 func GetBuildInfo(rtDetails *config.ServerDetails, buildName, buildNumber string) (*buildinfo.PublishedBuildInfo, bool, error) {
-	servicesManager, err := utils.CreateServiceManager(rtDetails, false)
+	servicesManager, err := utils.CreateServiceManager(rtDetails, -1, false)
 	if err != nil {
 		return nil, false, err
 	}

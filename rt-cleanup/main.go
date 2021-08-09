@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/jfrog/jfrog-cli-core/plugins"
-	"github.com/jfrog/jfrog-cli-core/plugins/components"
+	"github.com/jfrog/jfrog-cli-core/v2/plugins"
+	"github.com/jfrog/jfrog-cli-core/v2/plugins/components"
 	"github.com/jfrog/jfrog-cli-plugin-template/rt-cleanup/commands"
 )
 
@@ -14,7 +14,7 @@ func getApp() components.App {
 	app := components.App{}
 	app.Name = "rt-cleanup"
 	app.Description = "Easily clean unused artifacts"
-	app.Version = "v1.0.1"
+	app.Version = "v1.0.2"
 	app.Commands = getCommands()
 	return app
 }

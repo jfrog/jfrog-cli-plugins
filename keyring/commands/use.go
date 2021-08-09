@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	gofrogio "github.com/jfrog/gofrog/io"
-	"github.com/jfrog/jfrog-cli-core/plugins/components"
+	"github.com/jfrog/jfrog-cli-core/v2/plugins/components"
 	"github.com/zalando/go-keyring"
 	"io"
 	"os/exec"

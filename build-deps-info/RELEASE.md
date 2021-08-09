@@ -1,3 +1,6 @@
+## 1.2.1 (August 9, 2021)
+- Update dependencies.
+
 ## 1.2.0 (November 27, 2020)
 - Bugfix - Wrong alias parameter.
 

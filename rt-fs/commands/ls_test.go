@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	commandsutils "github.com/jfrog/jfrog-cli-core/artifactory/commands/utils"
+	commandsutils "github.com/jfrog/jfrog-cli-core/v2/artifactory/commands/utils"
 	"github.com/jfrog/jfrog-client-go/utils/io/content"
 	"github.com/stretchr/testify/assert"
 )

@@ -3,7 +3,7 @@ package commands
 import (
 	"encoding/json"
 	"errors"
-	"github.com/jfrog/jfrog-cli-core/plugins/components"
+	"github.com/jfrog/jfrog-cli-core/v2/plugins/components"
 	"github.com/jfrog/jfrog-client-go/utils/log"
 	"github.com/zalando/go-keyring"
 )
