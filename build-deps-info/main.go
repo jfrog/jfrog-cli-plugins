@@ -4,10 +4,10 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
-	"github.com/jfrog/jfrog-cli-core/common/commands"
-	"github.com/jfrog/jfrog-cli-core/plugins"
-	"github.com/jfrog/jfrog-cli-core/plugins/components"
+	"github.com/jfrog/jfrog-cli-core/v2/artifactory/utils"
+	"github.com/jfrog/jfrog-cli-core/v2/common/commands"
+	"github.com/jfrog/jfrog-cli-core/v2/plugins"
+	"github.com/jfrog/jfrog-cli-core/v2/plugins/components"
 	builddepsinfo "github.com/jfrog/jfrog-cli-plugins/build-deps-info/commands"
 )
 
@@ -32,7 +32,7 @@ func main() {
 					if err != nil {
 						return err
 					}
-					servicesManager, err := utils.CreateServiceManager(rtDetails, false)
+					servicesManager, err := utils.CreateServiceManager(rtDetails, -1, false)
 					if err != nil {
 						return err
 					}
