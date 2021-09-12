@@ -1,4 +1,4 @@
-## 1.1.2 (August 9, 2021)
+## 1.1.2 (September 12, 2021)
 - Update dependencies.
 
 ## 1.1.1 (April 26, 2021)
