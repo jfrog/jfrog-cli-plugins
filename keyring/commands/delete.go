@@ -2,10 +2,10 @@ package commands
 
 import (
 	"errors"
-	"github.com/jfrog/jfrog-cli-core/plugins/components"
+	"github.com/jfrog/jfrog-cli-core/v2/plugins/components"
+	"github.com/jfrog/jfrog-cli-core/v2/utils/coreutils"
 	"github.com/jfrog/jfrog-client-go/utils/log"
 	"github.com/zalando/go-keyring"
-	"github.com/jfrog/jfrog-cli-core/utils/coreutils"
 )
 
 func GetDeleteCommand() components.Command {
@@ -47,4 +47,3 @@ func doDelete(serverId string) error {
 	}
 	return err
 }
-
