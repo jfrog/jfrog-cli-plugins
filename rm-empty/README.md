@@ -25,6 +25,8 @@ Uninstalling a plugin
     - Examples:
     ```
     $ jfrog rm-empty folders repository/path/in/rt/
+  
+    $ jfrog rm-empty folders repository/path/in/rt/ --quiet=true
 
     ```
 

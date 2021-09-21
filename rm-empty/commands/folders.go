@@ -9,6 +9,7 @@ import (
 	clientrtutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
 	clientutils "github.com/jfrog/jfrog-client-go/utils"
 	"github.com/jfrog/jfrog-client-go/utils/io/content"
+	"github.com/jfrog/jfrog-client-go/utils/log"
 	"strconv"
 	"strings"
 
@@ -45,7 +46,12 @@ func getFlags() []components.Flag {
 	return []components.Flag{
 		components.StringFlag{
 			Name:        "server-id",
-			Description: "Artifactory server ID configured using the config command.",
+			Description: "Artifactory server ID configured using the config command",
+		},
+		components.StringFlag{
+			Name:         "quiet",
+			Description:  "Set to true to skip the delete confirmation message",
+			DefaultValue: "false",
 		},
 	}
 }
@@ -67,15 +73,17 @@ func foldersCmd(c *components.Context) error {
 	}
 
 	path := c.Arguments[0]
-	return deleteEmptyFolders(rtDetails, path)
+	return deleteEmptyFolders(rtDetails, path, c.GetBoolFlagValue("quiet"))
 }
 
 // Deletes all the empty folders under the specified path in Artifactory.
-func deleteEmptyFolders(rtDetails *config.ServerDetails, path string) (err error) {
+func deleteEmptyFolders(rtDetails *config.ServerDetails, path string, quiet bool) (err error) {
 	// Create a search command, to find all the files and folders under the specified path.
 	spec := spec.NewBuilder().Pattern(path).IncludeDirs(true).Recursive(true).BuildSpec()
 	cmd := generic.NewSearchCommand()
 	cmd.SetServerDetails(rtDetails).SetSpec(spec).SetRetries(3)
+
+	log.Info("Searching for all items under", path)
 
 	// Run the search and receive a reader with the results.
 	var reader *content.ContentReader
@@ -120,34 +128,41 @@ func deleteEmptyFolders(rtDetails *config.ServerDetails, path string) (err error
 		}
 	}()
 
+	var length int
+	length, err = emptyFoldersReader.Length()
+	if err != nil {
+		return
+	}
+	if length == 0 {
+		log.Info("No empty folders found")
+		return
+	}
+
 	// Delete the folders in the reader.
-	deleteItem(emptyFoldersReader, rtDetails)
+	deleteItem(emptyFoldersReader, rtDetails, quiet)
 	return
 }
 
 // Find all empty folders by scanning the sortedFilesReader, and write them into the emptyFoldersWriter.
-func filterEmptyFolders(sortedFile *content.ContentReader, emptyFoldersWriter *content.ContentWriter) {
-	var prevItem *clientrtutils.ResultItem
-	var lastItem *clientrtutils.ResultItem
-
-	for item := new(clientrtutils.ResultItem); sortedFile.NextRecord(item) == nil; item = new(clientrtutils.ResultItem) {
-		if prevItem != nil && !strings.HasPrefix(item.Path, prevItem.Path) {
-			emptyFoldersWriter.Write(prevItem)
+func filterEmptyFolders(sortedFilesReader *content.ContentReader, emptyFoldersWriter *content.ContentWriter) {
+	var prevFolder *clientrtutils.ResultItem
+	for item := new(clientrtutils.ResultItem); sortedFilesReader.NextRecord(item) == nil; item = new(clientrtutils.ResultItem) {
+		if prevFolder != nil && !strings.HasPrefix(item.Path, prevFolder.Path) {
+			emptyFoldersWriter.Write(prevFolder)
 		}
 		if item.Type == "folder" {
-			prevItem = item
+			prevFolder = item
 		} else {
-			prevItem = nil
+			prevFolder = nil
 		}
-		lastItem = item
 	}
-	if lastItem != nil && lastItem.Type == "folder" {
-		emptyFoldersWriter.Write(prevItem)
+	if prevFolder != nil {
+		emptyFoldersWriter.Write(prevFolder)
 	}
 }
 
 // Deletes the paths sent in the provided reader from the provided Artifactory server.
-func deleteItem(reader *content.ContentReader, rtDetails *config.ServerDetails) (success, failure int, err error) {
+func deleteItem(reader *content.ContentReader, rtDetails *config.ServerDetails, quiet bool) (success, failure int, err error) {
 	// Create a delete command
 	cmd := generic.NewDeleteCommand()
 	cmd.SetServerDetails(rtDetails)
