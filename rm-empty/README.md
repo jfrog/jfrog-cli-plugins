@@ -1,6 +1,7 @@
 # rm-empty
 
 ## About this plugin
+This plugin can help find out the most popularly downlaoded artifacts in a given repository, Artifacts that are consuming the most space in a given repository with various levels of customization avaialble. Results obtained can also be sorted and filtered.
 
 ## Installation with JFrog CLI
 Installing the latest version:
@@ -22,6 +23,7 @@ Uninstalling a plugin
         - path - A path in Artifactory, under which to remove all the empty folders.
     - Flags:
         - server-id: The Artifactory server ID configured using the config command.
+        - quiet: Skip the delete confirmation message
     - Examples:
     ```
     $ jfrog rm-empty folders repository/path/in/rt/
