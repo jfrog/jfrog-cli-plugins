@@ -6,7 +6,7 @@ This plugin can help find out the most popularly downlaoded artifacts in a given
 ## Installation with JFrog CLI
 Installing the latest version:
 
-`$ jfrog plugin install rm-empty
+`$ jfrog plugin install rm-empty`
 
 Installing a specific version:
 
@@ -14,7 +14,7 @@ Installing a specific version:
 
 Uninstalling a plugin
 
-`$ jfrog plugin uninstall rm-empty
+`$ jfrog plugin uninstall rm-empty`
 
 ## Usage
 ### Commands
@@ -22,14 +22,17 @@ Uninstalling a plugin
     - Arguments:
         - path - A path in Artifactory, under which to remove all the empty folders.
     - Flags:
-        - server-id: The Artifactory server ID configured using the config command.
+        - server-id: The JFrog instance ID configured using the ```jfrog c add``` command. If not provided, the default configured instance is used.
         - quiet: Skip the delete confirmation message
     - Examples:
     ```
     $ jfrog rm-empty folders repository/path/in/rt/
-  
+
     $ jfrog rm-empty folders repository/path/in/rt/ --quiet
 
+    $ jfrog rm-empty f repository/path/in/rt/
+
+    $ jfrog rm-empty f repository/path/in/rt/ --server-id my-server-id
     ```
 
 ### Environment variables
