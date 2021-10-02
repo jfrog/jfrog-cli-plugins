@@ -48,10 +48,10 @@ func getFlags() []components.Flag {
 			Name:        "server-id",
 			Description: "Artifactory server ID configured using the config command",
 		},
-		components.StringFlag{
+		components.BoolFlag{
 			Name:         "quiet",
-			Description:  "Set to true to skip the delete confirmation message",
-			DefaultValue: "false",
+			Description:  "Skip the delete confirmation message",
+			DefaultValue: false,
 		},
 	}
 }
@@ -87,8 +87,7 @@ func deleteEmptyFolders(rtDetails *config.ServerDetails, path string, quiet bool
 
 	// Run the search and receive a reader with the results.
 	var reader *content.ContentReader
-	reader, err = cmd.Search()
-	if err != nil {
+	if reader, err = cmd.Search(); err != nil {
 		return
 	}
 	defer func() {
@@ -101,23 +100,38 @@ func deleteEmptyFolders(rtDetails *config.ServerDetails, path string, quiet bool
 	// Sort the results in the reader, so that the empty folders can be found by reading the results
 	// record by record.
 	var sortedFilesReader *content.ContentReader
-	sortedFilesReader, err = content.SortContentReader(clientrtutils.ResultItem{}, reader, true)
-	if err != nil {
+	if sortedFilesReader, err = content.SortContentReader(clientrtutils.ResultItem{}, reader, true); err != nil {
 		return
 	}
 
 	// Create a writer, that will be used to store the paths of the empty folders found.
 	var emptyFoldersWriter *content.ContentWriter
 	emptyFoldersWriter, err = content.NewContentWriter(content.DefaultKey, true, false)
+	emptyFoldersReaderClosed := false
 	defer func() {
-		e := emptyFoldersWriter.Close()
-		if err == nil {
-			err = e
+		if !emptyFoldersReaderClosed {
+			e := emptyFoldersWriter.Close()
+			if err == nil {
+				err = e
+			}
 		}
 	}()
 
 	// Find all empty folders by scanning the sortedFilesReader, and write them into the emptyFoldersWriter.
-	filterEmptyFolders(sortedFilesReader, emptyFoldersWriter)
+	var totalFound int
+	totalFound, err = filterEmptyFolders(sortedFilesReader, emptyFoldersWriter)
+	if err != nil {
+		return
+	}
+
+	logEmptyFoldersFound(totalFound)
+
+	// The writer needs to be closed before it cam be read from.
+	err = emptyFoldersWriter.Close()
+	if err != nil {
+		return
+	}
+	emptyFoldersReaderClosed = true
 
 	// Create a reader from the writer, to read all the empty folders found.
 	emptyFoldersReader := content.NewContentReader(emptyFoldersWriter.GetFilePath(), content.DefaultKey)
@@ -134,23 +148,32 @@ func deleteEmptyFolders(rtDetails *config.ServerDetails, path string, quiet bool
 		return
 	}
 	if length == 0 {
-		log.Info("No empty folders found")
 		return
 	}
 
 	// Delete the folders in the reader.
-	deleteItem(emptyFoldersReader, rtDetails, quiet)
-	return
+	return deleteItem(emptyFoldersReader, rtDetails, quiet)
+}
+
+func logEmptyFoldersFound(totalFound int) {
+	if totalFound == 0 {
+		log.Info("Found no empty folders.")
+	} else if totalFound == 1 {
+		log.Info("Found 1 empty folder.")
+	} else {
+		log.Info("Found", totalFound, "empty folders.")
+	}
 }
 
 // Find all empty folders by scanning the sortedFilesReader, and write them into the emptyFoldersWriter.
-func filterEmptyFolders(sortedFilesReader *content.ContentReader, emptyFoldersWriter *content.ContentWriter) {
+func filterEmptyFolders(sortedFilesReader *content.ContentReader, emptyFoldersWriter *content.ContentWriter) (totalFound int, err error) {
 	var prevFolder *clientrtutils.ResultItem
 	for item := new(clientrtutils.ResultItem); sortedFilesReader.NextRecord(item) == nil; item = new(clientrtutils.ResultItem) {
 		if prevFolder != nil && !strings.HasPrefix(item.Path, prevFolder.Path) {
 			emptyFoldersWriter.Write(prevFolder)
+			totalFound++
 		}
-		if item.Type == "folder" {
+		if item.Type == "folder" && !isRepo(item.Path) {
 			prevFolder = item
 		} else {
 			prevFolder = nil
@@ -158,24 +181,37 @@ func filterEmptyFolders(sortedFilesReader *content.ContentReader, emptyFoldersWr
 	}
 	if prevFolder != nil {
 		emptyFoldersWriter.Write(prevFolder)
+		totalFound++
 	}
+	return totalFound, sortedFilesReader.GetError()
+}
+
+// Returns true if the provided path leads to the root of a repository.
+func isRepo(path string) bool {
+	slashCount := strings.Count(path, "/")
+	if strings.HasSuffix(path, "/") {
+		return slashCount == 1
+	}
+	return slashCount == 0
 }
 
 // Deletes the paths sent in the provided reader from the provided Artifactory server.
-func deleteItem(reader *content.ContentReader, rtDetails *config.ServerDetails, quiet bool) (success, failure int, err error) {
+func deleteItem(reader *content.ContentReader, rtDetails *config.ServerDetails, quiet bool) (err error) {
 	// Create a delete command
 	cmd := generic.NewDeleteCommand()
 	cmd.SetServerDetails(rtDetails)
 
 	// Get confirmation from the users before deleted the paths.
-	var allowDelete bool
-	allowDelete, err = utils.ConfirmDelete(reader)
+	allowDelete := quiet
+	if !quiet {
+		allowDelete, err = utils.ConfirmDelete(reader)
+	}
 	if err != nil || !allowDelete {
 		return
 	}
 
 	// Delete the paths from Artifactory.
-	success, failure, err = cmd.DeleteFiles(reader)
+	_, _, err = cmd.DeleteFiles(reader)
 	return
 }
 

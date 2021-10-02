@@ -90,6 +90,7 @@ func assertEmptyFolders(t *testing.T, actualEmptyFoldersReader *content.ContentR
 		assert.Equal(t, "folder", item.Type, "Unexpected item type. Expected a folder but got %s", item.Type)
 		i++
 	}
+	assert.NoError(t, actualEmptyFoldersReader.GetError())
 }
 
 func getTestItems() []clientrtutils.ResultItem {
