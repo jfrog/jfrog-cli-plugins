@@ -11,7 +11,7 @@ func TestHelmToFilespec1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error loading test chart: %s\n", err)
 	}
-	spec, _, err := createFilespec(chrt, "testhelmrepo", "testdockerrepo")
+	spec, _, err := createFilespec(chrt, "testhelmrepo", "testdockerrepo", "")
 	if err != nil {
 		t.Fatalf("Error generating filespec: %s\n", err)
 	}
@@ -26,7 +26,37 @@ func TestHelmToFilespec2(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error loading test chart: %s\n", err)
 	}
-	spec, _, err := createFilespec(chrt, "testhelmrepo", "testdockerrepo")
+	spec, _, err := createFilespec(chrt, "testhelmrepo", "testdockerrepo", "")
+	if err != nil {
+		t.Fatalf("Error generating filespec: %s\n", err)
+	}
+	if spec != expected {
+		t.Fatalf("Generated spec is incorrect. Expected:\n%s\nGot:\n%s\n", expected, spec)
+	}
+}
+
+func TestHelmToFilespecWithoutValues(t *testing.T) {
+	expected := "{\"files\":[{\"pattern\":\"testdockerrepo/main-image/v0.0.1/\"},{\"pattern\":\"testdockerrepo/*/main-image/v0.0.1/\"},{\"pattern\":\"testhelmrepo/values-test-0.1.0.tgz\"},{\"pattern\":\"testhelmrepo/*/values-test-0.1.0.tgz\"}]}"
+	chrt, err := chartutil.Load("testdata/values-test-0.1.0.tgz")
+	if err != nil {
+		t.Fatalf("Error loading test chart: %s\n", err)
+	}
+	spec, _, err := createFilespec(chrt, "testhelmrepo", "testdockerrepo", "")
+	if err != nil {
+		t.Fatalf("Error generating filespec: %s\n", err)
+	}
+	if spec != expected {
+		t.Fatalf("Generated spec is incorrect. Expected:\n%s\nGot:\n%s\n", expected, spec)
+	}
+}
+
+func TestHelmToFilespecWithValues(t *testing.T) {
+	expected := "{\"files\":[{\"pattern\":\"testdockerrepo/extra-container/v0.0.1/\"},{\"pattern\":\"testdockerrepo/*/extra-container/v0.0.1/\"},{\"pattern\":\"testdockerrepo/main-image/v0.0.1/\"},{\"pattern\":\"testdockerrepo/*/main-image/v0.0.1/\"},{\"pattern\":\"testhelmrepo/values-test-0.1.0.tgz\"},{\"pattern\":\"testhelmrepo/*/values-test-0.1.0.tgz\"}]}"
+	chrt, err := chartutil.Load("testdata/values-test-0.1.0.tgz")
+	if err != nil {
+		t.Fatalf("Error loading test chart: %s\n", err)
+	}
+	spec, _, err := createFilespec(chrt, "testhelmrepo", "testdockerrepo", "testdata/values-test.yaml")
 	if err != nil {
 		t.Fatalf("Error generating filespec: %s\n", err)
 	}

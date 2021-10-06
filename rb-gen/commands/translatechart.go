@@ -36,6 +36,7 @@ type TranslateChartCommand struct {
 	rtDetails            *config.ArtifactoryDetails
 	releaseBundlesParams distributionServicesUtils.ReleaseBundleParams
 	sourceChartPath      string
+	valuesFilePath       string
 	dockerRepo           string
 	dryRun               bool
 }
@@ -111,6 +112,11 @@ func getReleaseBundleTranslateChartFlags() []components.Flag {
 			Mandatory:   true,
 		},
 		components.StringFlag{
+			Name:        "values-file",
+			Description: "Local path to helm values file. Used when rendering the chart",
+			Mandatory:   false,
+		},
+		components.StringFlag{
 			Name:        "docker-repo",
 			Description: "A Docker repository containing all the Docker images the Helm chart requires.",
 			Mandatory:   true,
@@ -153,6 +159,7 @@ func getReleaseBundleTranslateChartFlags() []components.Flag {
 
 func releaseBundleTranslateChartCmd(c *components.Context) error {
 	chartpath := c.GetStringFlagValue("chart-path")
+	valuesFilePath := c.GetStringFlagValue("values-file")
 	dockerrepo := c.GetStringFlagValue("docker-repo")
 	if !(len(c.Arguments) == 2 && chartpath != "" && dockerrepo != "") {
 		return errors.New("Wrong number of arguments.")
@@ -166,7 +173,7 @@ func releaseBundleTranslateChartCmd(c *components.Context) error {
 	if err != nil {
 		return err
 	}
-	translateChartCmd.SetRtDetails(rtDetails).SetReleaseBundleCreateParams(params).SetSourceChartPath(chartpath).SetDockerRepo(dockerrepo).SetDryRun(c.GetBoolFlagValue("dry-run"))
+	translateChartCmd.SetRtDetails(rtDetails).SetReleaseBundleCreateParams(params).SetSourceChartPath(chartpath).SetValuesFilePath(valuesFilePath).SetDockerRepo(dockerrepo).SetDryRun(c.GetBoolFlagValue("dry-run"))
 	return rtcommands.Exec(translateChartCmd)
 }
 
@@ -392,6 +399,11 @@ func (tc *TranslateChartCommand) SetSourceChartPath(sourceChartPath string) *Tra
 	return tc
 }
 
+func (tc *TranslateChartCommand) SetValuesFilePath(valuesFilePath string) *TranslateChartCommand {
+	tc.valuesFilePath = valuesFilePath
+	return tc
+}
+
 func (tc *TranslateChartCommand) SetDockerRepo(dockerRepo string) *TranslateChartCommand {
 	tc.dockerRepo = dockerRepo
 	return tc
@@ -412,7 +424,7 @@ func (tc *TranslateChartCommand) Run() error {
 	if err != nil {
 		return err
 	}
-	specstr, expected, err := createFilespec(chrt, extractRepo(tc.sourceChartPath), tc.dockerRepo)
+	specstr, expected, err := createFilespec(chrt, extractRepo(tc.sourceChartPath), tc.dockerRepo, tc.valuesFilePath)
 	if err != nil {
 		return err
 	}
@@ -504,9 +516,17 @@ func readFileFromArtifactory(artDetails *config.ArtifactoryDetails, downloadPath
 	return body, err
 }
 
-func createFilespec(chrt *chart.Chart, helmrepo, dockerrepo string) (string, []string, error) {
+func createFilespec(chrt *chart.Chart, helmrepo, dockerrepo string, valuesFilePath string) (string, []string, error) {
 	flist := make([]string, 0)
-	files, err := renderutil.Render(chrt, &chart.Config{Raw: "{}"}, renderutil.Options{})
+	chartConfig := &chart.Config{Raw: "{}"}
+	if valuesFilePath != "" {
+		yfile, err := ioutil.ReadFile(valuesFilePath)
+		if err != nil {
+			return "", flist, err
+		}
+		chartConfig = &chart.Config{Raw: string(yfile)}
+	}
+	files, err := renderutil.Render(chrt, chartConfig, renderutil.Options{})
 	if err != nil {
 		return "", flist, err
 	}
