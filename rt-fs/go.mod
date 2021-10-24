@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/buger/goterm v0.0.0-20200322175922-2f3e71b85129
-	github.com/jfrog/jfrog-cli-core/v2 v2.4.0
-	github.com/jfrog/jfrog-client-go v1.5.0
+	github.com/jfrog/jfrog-cli-core/v2 v2.4.1
+	github.com/jfrog/jfrog-client-go v1.5.1
 	github.com/stretchr/testify v1.7.0
 )
