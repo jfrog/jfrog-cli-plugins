@@ -1,4 +1,4 @@
-module github.com/jfrog/jfrog-cli-plugin-template/rt-cleanup
+module github.com/jfrog/jfrog-cli-plugins/rt-cleanup
 
 go 1.14
 
