@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/c-bata/go-prompt v0.2.5
-	github.com/jfrog/jfrog-cli-core/v2 v2.7.4
-	github.com/jfrog/jfrog-client-go v1.6.6
+	github.com/jfrog/jfrog-cli-core/v2 v2.8.0
+	github.com/jfrog/jfrog-client-go v1.7.0
 	github.com/stretchr/testify v1.7.0
 )
