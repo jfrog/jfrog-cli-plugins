@@ -6,15 +6,15 @@ This JFrog CLI plugin prints a report of a published build info in Artifactory, 
 ## Installation with JFrog CLI
 Installing the latest version:
 
-`$ jfrog plugin install build-report`
+`$ jf plugin install build-report`
 
 Installing a specific version:
 
-`$ jfrog plugin install build-report@version`
+`$ jf plugin install build-report@version`
 
 Uninstalling a plugin
 
-`$ jfrog plugin uninstall build-report`
+`$ jf plugin uninstall build-report`
 
 ## Usage
 ### Commands
@@ -26,11 +26,11 @@ Uninstalling a plugin
         - diff - An older build number, to show the diff with the build number passed as an argument.  **[Optional]**
     - Examples:
     
-`$ jfrog build-report view build-example 2`
+`$ jf build-report view build-example 2`
 
 ![View](docs/images/build-report-view.png)
 
-`$ jfrog build-report view build-example 2 --diff=1`
+`$ jf build-report view build-example 2 --diff=1`
 
 ![Diff](docs/images/build-report-diff.png)
 

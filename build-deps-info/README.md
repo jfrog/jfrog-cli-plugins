@@ -11,15 +11,15 @@ Note: If a specific dependency hasn't been published to Artifactory as an artifa
 ## Installation with JFrog CLI
 Installing the latest version:
 
-`$ jfrog plugin install build-deps-info`
+`$ jf plugin install build-deps-info`
 
 Installing a specific version:
 
-`$ jfrog plugin install build-deps-info@version`
+`$ jf plugin install build-deps-info@version`
 
 Uninstalling a plugin
 
-`$ jfrog plugin uninstall build-deps-info`
+`$ jf plugin uninstall build-deps-info`
 
 ## Usage
 ### Commands
@@ -32,7 +32,7 @@ Uninstalling a plugin
         - server-id: Artifactory server ID configured using the config command **[Optional]**
     - Example:
     ```
-  $ jfrog build-deps-info show my_build_name 1 --repo=maven-local
+  $ jf build-deps-info show my_build_name 1 --repo=maven-local
     +------------------------------------+---------------------------------------------------+---------------+--------------------------------------------------------------------------------------+
     | MODULE ID                          | DEPENDENCY NAME                                   | BUILD         | VCS URL                                                                              |
     +------------------------------------+---------------------------------------------------+---------------+--------------------------------------------------------------------------------------+

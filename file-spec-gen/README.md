@@ -6,15 +6,15 @@ This plugin provides an easy way for generating file-specs json.
 ## Installation with JFrog CLI
 Installing the latest version:
 
-`$ jfrog plugin install file-spec-gen`
+`$ jf plugin install file-spec-gen`
 
 Installing a specific version:
 
-`$ jfrog plugin install file-spec-gen@version`
+`$ jf plugin install file-spec-gen@version`
 
 Uninstalling a plugin
 
-`$ jfrog plugin uninstall file-spec-gen`
+`$ jf plugin uninstall file-spec-gen`
 
 ## Usage
 ### Commands
@@ -25,8 +25,8 @@ Uninstalling a plugin
         - --file: Output file path, if not provided the file-spec is outputted to the log. **[Optional]**
     - Examples:
     ```
-  $ jfrog file-spec-gen create
-  $ jfrog file-spec-gen create --file="/path/to/spec"
+  $ jf file-spec-gen create
+  $ jf file-spec-gen create --file="/path/to/spec"
   ```
 
 ## Release Notes
