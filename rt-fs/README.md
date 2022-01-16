@@ -6,15 +6,15 @@ This plugin executes file system commands in Artifactory. It is designed to mimi
 ## Installation with JFrog CLI
 Installing the latest version:
 
-`$ jfrog plugin install rt-fs`
+`$ jf plugin install rt-fs`
 
 Installing a specific version:
 
-`$ jfrog plugin install rt-fs@version`
+`$ jf plugin install rt-fs@version`
 
 Uninstalling a plugin
 
-`$ jfrog plugin uninstall rt-fs`
+`$ jf plugin uninstall rt-fs`
 
 ## Usage
 ### Commands
@@ -25,7 +25,7 @@ Uninstalling a plugin
         - --server-id: Artifactory server ID configured using the config command **[Optional]**
     - Example:
     ```
-        $ jfrog rt-fs ls generic-local
+        $ jf rt-fs ls generic-local
         file_name1.zip   file_name2.zip   file_name3.zip
     ```
 * cat
@@ -35,7 +35,7 @@ Uninstalling a plugin
         - --server-id: Artifactory server ID configured using the config command **[Optional]**
     - Example:
     ```
-        $ jfrog rt-fs cat generic-local/file_name1.txt
+        $ jf rt-fs cat generic-local/file_name1.txt
         Hello world
     ```
 

@@ -11,15 +11,15 @@ If you're planning to clean Docker repositories, this plugin may lead to unexpec
 ## Installation with JFrog CLI
 Installing the latest version:
 
-`$ jfrog plugin install rt-cleanup`
+`$ jf plugin install rt-cleanup`
 
 Installing a specific version:
 
-`$ jfrog plugin install rt-cleanup@version`
+`$ jf plugin install rt-cleanup@version`
 
 Uninstalling a plugin
 
-`$ jfrog plugin uninstall rt-cleanup`
+`$ jf plugin uninstall rt-cleanup`
 
 ## Usage
 ### Commands
@@ -32,7 +32,7 @@ Uninstalling a plugin
         - no-dl: Artifacts that have not been downloaded for at least no-dl will be deleted.. **[Default: 1]**
     - Examples:
     ```
-    $ jfrog rt-cleanup clean example-repo-local --time-unit=day --no-dl=3
+    $ jf rt-cleanup clean example-repo-local --time-unit=day --no-dl=3
 
     ```
 
