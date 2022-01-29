@@ -2,7 +2,7 @@
 
 ## About this plugin
 This plugin is a simple Artifactory cleanup plugin.
-It can be used to delete all artifacts that have not been downloaded for the past n time units (both can bu configured)
+It can be used to delete all artifacts that have not been downloaded for the past n time units (both can be configured)
 from a given repository.
 
 **Note:**
