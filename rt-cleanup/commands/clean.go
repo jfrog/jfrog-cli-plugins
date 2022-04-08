@@ -50,7 +50,7 @@ func getCleanFlags() []components.Flag {
 		},
 		components.StringFlag{
 			Name:         "no-dl",
-			Description:  "Artifacts that have not been downloaded for at least no-dl will be deleted.",
+			Description:  "Artifacts that have not been downloaded or modified for at least no-dl will be deleted.",
 			DefaultValue: "1",
 		},
 	}
@@ -112,15 +112,20 @@ func cleanArtifcats(config *cleanConfiguration, artifactoryDetails *config.Serve
 }
 
 func buildAQL(c *cleanConfiguration) (aqlQuery string) {
-	// Finds all artfacts that hasn't been downloaded for at least noDownloadedTime (or has never been downloaded)
+	// Finds all artfacts that hasn't been downloaded or modified for at least noDownloadedTime
 	aqlQuery = `items.find({` +
 		`"type":"file",` +
-		`"repo":%q,` +
-		`"$or": [` +
-		`{` +
-		`"stat.downloaded":{"$before":%q},` +
-		`"stat.downloads":{"$eq":null}` +
-		`}` +
+		`"repo":%[1]q,` +
+		`"$or":[` +
+		`{"$and":[` +
+		`{"modified":{"$before":%[2]q}},` +
+		`{"stat.downloaded":{"$before":%[2]q}},` +
+		`{"stat.downloads":{"$gt":"0"}}` +
+		`]},` +
+		`{"$and":[` +
+		`{"modified":{"$before":%[2]q}},` +
+		`{"stat.downloads":{"$eq":null}}` +
+		`]}` +
 		`]` +
 		`})`
 
