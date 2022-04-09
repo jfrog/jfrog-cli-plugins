@@ -103,7 +103,7 @@ func cleanArtifcats(config *cleanConfiguration, artifactoryDetails *config.Serve
 	defer resultReader.Close()
 
 	// Delete the artifacts we found
-	serviceManager, err := utils.CreateServiceManager(artifactoryDetails, -1, false)
+	serviceManager, err := utils.CreateServiceManager(artifactoryDetails, -1, 0, false)
 	if err != nil {
 		return err
 	}
