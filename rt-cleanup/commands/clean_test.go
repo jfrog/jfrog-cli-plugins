@@ -11,12 +11,17 @@ const (
 	time = "17mo"
 	aql  = `items.find({` +
 		`"type":"file",` +
-		`"repo":` + `"` + repo + `",` +
-		`"$or": [` +
-		`{` +
-		`"stat.downloaded":{"$before":` + `"` + time + `"` + `},` +
-		`"stat.downloads":{"$eq":null}` +
-		`}` +
+		`"repo":"` + repo + `",` +
+		`"$or":[` +
+		`{"$and":[` +
+		`{"modified":{"$before":"` + time + `"}},` +
+		`{"stat.downloaded":{"$before":"` + time + `"}},` +
+		`{"stat.downloads":{"$gt":"0"}}` +
+		`]},` +
+		`{"$and":[` +
+		`{"modified":{"$before":"` + time + `"}},` +
+		`{"stat.downloads":{"$eq":null}}` +
+		`]}` +
 		`]` +
 		`})`
 )
