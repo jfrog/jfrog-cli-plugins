@@ -2,6 +2,7 @@ package commands
 
 import (
 	"errors"
+	"github.com/jfrog/build-info-go/entities"
 	"os"
 
 	"github.com/jedib0t/go-pretty/v6/table"
@@ -10,7 +11,6 @@ import (
 	"github.com/jfrog/jfrog-cli-core/v2/utils/config"
 	"github.com/jfrog/jfrog-cli-core/v2/utils/coreutils"
 	"github.com/jfrog/jfrog-cli-plugins/build-report/utils"
-	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	"github.com/jfrog/jfrog-client-go/utils/log"
 	"golang.org/x/crypto/ssh/terminal"
 )
@@ -115,14 +115,14 @@ func doView(rtDetails *config.ServerDetails, buildName, buildNumber, buildNumber
 	return nil
 }
 
-func printBuildDetailsTable(publishedBuildInfo *buildinfo.PublishedBuildInfo) {
+func printBuildDetailsTable(publishedBuildInfo *entities.PublishedBuildInfo) {
 	t := table.NewWriter()
 	t.SetTitle("Build Details")
 	fillBuildDetailsTable(t, publishedBuildInfo.BuildInfo)
 	renderWithDefaults(t)
 }
 
-func fillBuildDetailsTable(t table.Writer, buildInfo buildinfo.BuildInfo) {
+func fillBuildDetailsTable(t table.Writer, buildInfo entities.BuildInfo) {
 	// Repeating Agents in the first header will be merged as one cell above their name/version.
 	t.AppendHeader(table.Row{"Name", "Number", "Started", "Artifactory Principal", "Agent", "Agent", "Build Agent", "Build Agent"}, table.RowConfig{AutoMerge: true})
 	t.AppendHeader(table.Row{"", "", "", "", "Name", "Version", "Name", "Version"})
@@ -136,11 +136,11 @@ func fillBuildDetailsTable(t table.Writer, buildInfo buildinfo.BuildInfo) {
 		buildAgentName = buildInfo.BuildAgent.Name
 		buildAgentVersion = buildInfo.BuildAgent.Version
 	}
-	t.AppendRow(table.Row{buildInfo.Name, buildInfo.Number, buildInfo.Started, buildInfo.ArtifactoryPrincipal,
+	t.AppendRow(table.Row{buildInfo.Name, buildInfo.Number, buildInfo.Started, buildInfo.Principal,
 		agentName, agentVersion, buildAgentName, buildAgentVersion})
 }
 
-func printBuildModulesTable(modules []buildinfo.Module) {
+func printBuildModulesTable(modules []entities.Module) {
 	t := table.NewWriter()
 	t.SetTitle("Modules")
 
@@ -154,31 +154,21 @@ func printBuildModulesTable(modules []buildinfo.Module) {
 	renderWithDefaults(t)
 }
 
-func fillBuildModulesTable(t table.Writer, modules []buildinfo.Module) {
+func fillBuildModulesTable(t table.Writer, modules []entities.Module) {
 	t.AppendHeader(table.Row{"Module", "Art/Dep", "Name/ID", "Type", "Sha1", "Md5"})
 	for _, mod := range modules {
 		for _, art := range mod.Artifacts {
-			var sha1, md5 string
-			if art.Checksum != nil {
-				sha1 = art.Sha1
-				md5 = art.Md5
-			}
-			t.AppendRow(table.Row{mod.Id, "Artifact", art.Name, art.Type, sha1, md5})
+			t.AppendRow(table.Row{mod.Id, "Artifact", art.Name, art.Type, art.Sha1, art.Md5})
 		}
 		for _, dep := range mod.Dependencies {
-			var sha1, md5 string
-			if dep.Checksum != nil {
-				sha1 = dep.Sha1
-				md5 = dep.Md5
-			}
-			t.AppendRow(table.Row{mod.Id, "Dependency", dep.Id, dep.Type, sha1, md5})
+			t.AppendRow(table.Row{mod.Id, "Dependency", dep.Id, dep.Type, dep.Sha1, dep.Md5})
 		}
 	}
 }
 
 var modulesDiffHeader = table.Row{"Module", "Art/Dep", "Name/ID", "Diff Name/Id", "Type", "Sha1", "Md5", "Change"}
 
-// Prints a table showing the the builds modules diff.
+// Prints a table showing the builds modules diff.
 func printModulesDiffTable(diff *utils.BuildDiff) {
 	t := table.NewWriter()
 	t.SetTitle("Modules")

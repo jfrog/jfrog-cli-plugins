@@ -2,23 +2,20 @@ package builddepsinfo
 
 import (
 	"errors"
-	"os"
-	"time"
-
 	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/jfrog/jfrog-cli-plugins/build-deps-info/commands/utils"
-	servicesutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
-	"github.com/jfrog/jfrog-client-go/utils/io/content"
-	"github.com/jfrog/jfrog-client-go/utils/log"
-
+	"github.com/jfrog/build-info-go/entities"
 	"github.com/jfrog/gofrog/parallel"
+	"github.com/jfrog/jfrog-cli-plugins/build-deps-info/commands/utils"
 	"github.com/jfrog/jfrog-client-go/artifactory"
-	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	"github.com/jfrog/jfrog-client-go/artifactory/services"
+	servicesutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
 	serviceutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
 	clientutils "github.com/jfrog/jfrog-client-go/utils"
-
 	"github.com/jfrog/jfrog-client-go/utils/errorutils"
+	"github.com/jfrog/jfrog-client-go/utils/io/content"
+	"github.com/jfrog/jfrog-client-go/utils/log"
+	"os"
+	"time"
 )
 
 func init() {
@@ -88,10 +85,10 @@ func (p *BuildDepsInfo) Exec() error {
 
 type DependencyProps struct {
 	Build string
-	buildinfo.Vcs
+	entities.Vcs
 }
 
-func getDependenciesDetails(bim []buildinfo.Module, repo string, sm artifactory.ArtifactoryServicesManager) (result map[string]*DependencyProps, err error) {
+func getDependenciesDetails(bim []entities.Module, repo string, sm artifactory.ArtifactoryServicesManager) (result map[string]*DependencyProps, err error) {
 	result = make(map[string]*DependencyProps)
 	// List of dependencies sha1.
 	sha1Set := utils.NewStringSet()
@@ -123,7 +120,7 @@ func getDependenciesDetails(bim []buildinfo.Module, repo string, sm artifactory.
 		}
 		item := result[currentResult.Actual_Sha1]
 		item.Build = buildName + buildNumber
-		item.Vcs = buildinfo.Vcs{Url: vcsUrl, Revision: vcsRevision}
+		item.Vcs = entities.Vcs{Url: vcsUrl, Revision: vcsRevision}
 	}
 	return
 }
@@ -142,7 +139,7 @@ func getArtifactsPropsBySha1(repository string, sha1s *utils.StringSet, sm artif
 	go func() {
 		defer producerConsumer.Done()
 		for i, sha1Bach := range sha1Batches {
-			producerConsumer.AddTaskWithError(handlerFunc(sha1Bach, i), errorsQueue.AddError)
+			_, _ = producerConsumer.AddTaskWithError(handlerFunc(sha1Bach, i), errorsQueue.AddError)
 		}
 	}()
 	producerConsumer.Run()

@@ -3,9 +3,10 @@ module github.com/jfrog/jfrog-cli-plugins/build-deps-info
 go 1.15
 
 require (
-	github.com/jedib0t/go-pretty/v6 v6.2.2
-	github.com/jfrog/gofrog v1.0.7
-	github.com/jfrog/jfrog-cli-core/v2 v2.4.2
-	github.com/jfrog/jfrog-client-go v1.5.2
-	github.com/stretchr/testify v1.7.0
+	github.com/jedib0t/go-pretty/v6 v6.3.0
+	github.com/jfrog/build-info-go v1.2.3
+	github.com/jfrog/gofrog v1.1.1
+	github.com/jfrog/jfrog-cli-core/v2 v2.12.3
+	github.com/jfrog/jfrog-client-go v1.12.0
+	github.com/stretchr/testify v1.7.1
 )

@@ -3,9 +3,10 @@ module github.com/jfrog/jfrog-cli-plugins/build-report
 go 1.14
 
 require (
-	github.com/jedib0t/go-pretty/v6 v6.2.2
-	github.com/jfrog/jfrog-cli-core/v2 v2.4.2
-	github.com/jfrog/jfrog-client-go v1.5.2
-	github.com/stretchr/testify v1.7.0
-	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
+	github.com/jedib0t/go-pretty/v6 v6.3.0
+	github.com/jfrog/build-info-go v1.2.3
+	github.com/jfrog/jfrog-cli-core/v2 v2.12.3
+	github.com/jfrog/jfrog-client-go v1.12.0
+	github.com/stretchr/testify v1.7.1
+	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
 )
