@@ -14,7 +14,7 @@ func getApp() components.App {
 	app := components.App{}
 	app.Name = "rm-empty"
 	app.Description = "Remove empty folders from Artifactory"
-	app.Version = "v1.0.0"
+	app.Version = "v1.0.1"
 	app.Commands = getCommands()
 	return app
 }
