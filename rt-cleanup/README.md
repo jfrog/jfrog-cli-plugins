@@ -2,7 +2,7 @@
 
 ## About this plugin
 This plugin is a simple Artifactory cleanup plugin.
-It can be used to delete all artifacts that have not been downloaded for the past n time units (both can be configured)
+It can be used to delete all artifacts that have not been downloaded or modified for the past n time units (both can be configured)
 from a given repository.
 
 **Note:**
@@ -29,7 +29,7 @@ Uninstalling a plugin
     - Flags:
         - server-id: The Artifactory server ID configured using the config command.
         - time-unit: The time unit of the no-dl time. year, month and day are the allowed values. **[Default: month]**
-        - no-dl: Artifacts that have not been downloaded or modified for at least no-dl will be deleted.. **[Default: 1]**
+        - no-dl: Artifacts that have not been downloaded or modified for at least no-dl will be deleted. **[Default: 1]**
     - Examples:
     ```
     $ jf rt-cleanup clean example-repo-local --time-unit=day --no-dl=3
