@@ -3,15 +3,14 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"net/http"
-	"path"
-
+	"github.com/jfrog/build-info-go/entities"
 	"github.com/jfrog/jfrog-cli-core/v2/utils/config"
-	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	servicesutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
 	"github.com/jfrog/jfrog-client-go/http/jfroghttpclient"
 	clientutils "github.com/jfrog/jfrog-client-go/utils"
 	"github.com/jfrog/jfrog-client-go/utils/log"
+	"net/http"
+	"path"
 )
 
 // Get builds diff from Artifactory.
@@ -84,7 +83,7 @@ type FileDiff interface {
 type ArtifactDiff struct {
 	Module   string `json:"module,omitempty"`
 	DiffName string `json:"diffName,omitempty"`
-	buildinfo.Artifact
+	entities.Artifact
 }
 
 func (a ArtifactDiff) GetModuleId() string {
@@ -108,23 +107,17 @@ func (a ArtifactDiff) GetArtOrDep() string {
 }
 
 func (a ArtifactDiff) GetSha1() string {
-	if a.Checksum == nil {
-		return ""
-	}
 	return a.Sha1
 }
 
 func (a ArtifactDiff) GetMd5() string {
-	if a.Checksum == nil {
-		return ""
-	}
 	return a.Md5
 }
 
 type DependencyDiff struct {
 	Module string `json:"module,omitempty"`
 	DiffId string `json:"diffId,omitempty"`
-	buildinfo.Dependency
+	entities.Dependency
 }
 
 func (d DependencyDiff) GetModuleId() string {
@@ -148,16 +141,10 @@ func (d DependencyDiff) GetArtOrDep() string {
 }
 
 func (d DependencyDiff) GetSha1() string {
-	if d.Checksum == nil {
-		return ""
-	}
 	return d.Sha1
 }
 
 func (d DependencyDiff) GetMd5() string {
-	if d.Checksum == nil {
-		return ""
-	}
 	return d.Md5
 }
 

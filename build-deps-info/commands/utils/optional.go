@@ -1,9 +1,8 @@
 package utils
 
 import (
+	"github.com/jfrog/build-info-go/entities"
 	"strings"
-
-	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 )
 
 const DefaultValue = "N/A"
@@ -16,7 +15,7 @@ func Optional(optionalValue string) (value string) {
 	return
 }
 
-func OptionalVcsUrl(vcs *buildinfo.Vcs) (value string) {
+func OptionalVcsUrl(vcs *entities.Vcs) (value string) {
 	value = DefaultValue
 	if vcs != nil {
 		value = Optional(vcs.Url)

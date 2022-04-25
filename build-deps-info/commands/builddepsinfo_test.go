@@ -1,14 +1,13 @@
 package builddepsinfo
 
 import (
-	"testing"
-
+	"github.com/jfrog/build-info-go/entities"
 	"github.com/jfrog/jfrog-client-go/artifactory"
-	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	"github.com/jfrog/jfrog-client-go/artifactory/services"
 	"github.com/jfrog/jfrog-client-go/artifactory/services/utils"
 	"github.com/jfrog/jfrog-client-go/utils/io/content"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 type ServiceManagerMock struct {
@@ -35,10 +34,10 @@ func (smm *ServiceManagerMock) SearchFiles(params services.SearchParams) (*conte
 }
 
 func TestGetDependenciesDetails(t *testing.T) {
-	modules := []buildinfo.Module{{Id: "my-plugin:", Artifacts: []buildinfo.Artifact{
-		{Name: "Artifact-name", Type: "Type", Checksum: &buildinfo.Checksum{Sha1: "123"}},
-	}, Dependencies: []buildinfo.Dependency{
-		{Id: "Dependency", Type: "File", Checksum: &buildinfo.Checksum{Sha1: "456"}},
+	modules := []entities.Module{{Id: "my-plugin:", Artifacts: []entities.Artifact{
+		{Name: "Artifact-name", Type: "Type", Checksum: entities.Checksum{Sha1: "123"}},
+	}, Dependencies: []entities.Dependency{
+		{Id: "Dependency", Type: "File", Checksum: entities.Checksum{Sha1: "456"}},
 	}}}
 	smMock := new(ServiceManagerMock)
 
@@ -49,6 +48,6 @@ func TestGetDependenciesDetails(t *testing.T) {
 
 func GetFirstSearchResultSortedByAsc() map[string]*DependencyProps {
 	return map[string]*DependencyProps{
-		"456": {Build: "Build-Name/Build-Number", Vcs: buildinfo.Vcs{Url: "www.vcs.com", Revision: "248"}},
+		"456": {Build: "Build-Name/Build-Number", Vcs: entities.Vcs{Url: "www.vcs.com", Revision: "248"}},
 	}
 }

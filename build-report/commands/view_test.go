@@ -3,9 +3,9 @@ package commands
 import (
 	"encoding/json"
 	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jfrog/build-info-go/entities"
 	"github.com/jfrog/jfrog-cli-plugins/build-report/utils"
 	"github.com/jfrog/jfrog-cli-plugins/build-report/utils/tests"
-	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"path/filepath"
@@ -14,13 +14,13 @@ import (
 
 func TestBuildDetailsTableHasConstantLength(t *testing.T) {
 	tests.LinesSameWidth = true
-	buildInfo := buildinfo.BuildInfo{
-		Name:                 "build-example",
-		Number:               "5",
-		Started:              "time",
-		ArtifactoryPrincipal: "admin",
-		Agent:                &buildinfo.Agent{Name: "jfrog-cli-go", Version: "1.40.0"},
-		BuildAgent:           &buildinfo.Agent{Name: "GENERIC"},
+	buildInfo := entities.BuildInfo{
+		Name:       "build-example",
+		Number:     "5",
+		Started:    "time",
+		Principal:  "admin",
+		Agent:      &entities.Agent{Name: "jfrog-cli-go", Version: "1.40.0"},
+		BuildAgent: &entities.Agent{Name: "GENERIC"},
 	}
 
 	tw := &tests.TableWrapper{Table: &table.Table{}}
@@ -31,23 +31,23 @@ func TestBuildDetailsTableHasConstantLength(t *testing.T) {
 
 func TestBuildModulesTableHasConstantLength(t *testing.T) {
 	tests.LinesSameWidth = true
-	modules := []buildinfo.Module{{
+	modules := []entities.Module{{
 		Id: "ModuleId",
-		Artifacts: []buildinfo.Artifact{
+		Artifacts: []entities.Artifact{
 			{
 				Name: "art",
 				Type: "json",
 				Path: "/path/to/art",
-				Checksum: &buildinfo.Checksum{
+				Checksum: entities.Checksum{
 					Sha1: "abcd", Md5: "aaaa",
 				},
 			},
 		},
-		Dependencies: []buildinfo.Dependency{
+		Dependencies: []entities.Dependency{
 			{
 				Id:   "dep",
 				Type: "json",
-				Checksum: &buildinfo.Checksum{
+				Checksum: entities.Checksum{
 					Sha1: "abcd", Md5: "aaaa",
 				},
 			},

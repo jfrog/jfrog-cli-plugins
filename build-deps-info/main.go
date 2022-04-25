@@ -32,7 +32,7 @@ func main() {
 					if err != nil {
 						return err
 					}
-					servicesManager, err := utils.CreateServiceManager(rtDetails, -1, false)
+					servicesManager, err := utils.CreateServiceManager(rtDetails, -1, 0, false)
 					if err != nil {
 						return err
 					}

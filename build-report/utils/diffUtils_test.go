@@ -2,7 +2,7 @@ package utils
 
 import (
 	"encoding/json"
-	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
+	"github.com/jfrog/build-info-go/entities"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"path/filepath"
@@ -25,10 +25,10 @@ func TestBuildDiffStruct(t *testing.T) {
 	assert.Len(t, buildDiff.Artifacts.Updated, 1)
 	assert.Len(t, buildDiff.Properties.Removed, 0)
 	expectedNewArt := ArtifactDiff{Module: "buildreport",
-		Artifact: buildinfo.Artifact{
+		Artifact: entities.Artifact{
 			Name: "one.more",
 			Type: "more",
-			Checksum: &buildinfo.Checksum{
+			Checksum: entities.Checksum{
 				Sha1: "2fed359ef19c218d052b6ad0f8ac701a5a929030",
 				Md5:  "7a4ceb07c7af56fbc520f335534714cd",
 			}}}
