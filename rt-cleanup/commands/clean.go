@@ -82,10 +82,10 @@ func cleanCmd(c *components.Context) error {
 	if err != nil {
 		return err
 	}
-	return cleanArtifcats(conf, rtDetails)
+	return cleanArtifacts(conf, rtDetails)
 }
 
-func cleanArtifcats(config *cleanConfiguration, artifactoryDetails *config.ServerDetails) error {
+func cleanArtifacts(config *cleanConfiguration, artifactoryDetails *config.ServerDetails) error {
 	// Search for artifacts to delete using AQL
 	aqlQuery := buildAQL(config)
 	authConfig, err := artifactoryDetails.CreateArtAuthConfig()

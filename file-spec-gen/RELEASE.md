@@ -1,3 +1,6 @@
+## 1.0.4 (May 31, 2022)
+- Update dependencies.
+
 ## 1.0.3 (Ap 19, 2021)
 - Update dependencies.
 

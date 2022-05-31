@@ -1,3 +1,6 @@
+## 1.1.1 (May 31, 2022)
+- Update dependencies.
+
 ## 1.1.0 (April 25, 2022)
 - Modification time is also taken into consideration.
 
