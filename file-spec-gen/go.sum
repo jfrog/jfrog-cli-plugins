@@ -320,8 +320,8 @@ github.com/jfrog/build-info-go v1.7.0/go.mod h1:213xp0wMeCy5bgAWvBzReZg5XV4xdUTX
 github.com/jfrog/gofrog v1.2.1/go.mod h1:lbkGXX/DHKdomaSV34eiOC3pAr1HRNa9ffOYh7U7b1U=
 github.com/jfrog/gofrog v1.2.2 h1:3Z+adDHPy6QJSrLAKUYrdZhY7ZF/ZEZWYkHX9LFECJM=
 github.com/jfrog/gofrog v1.2.2/go.mod h1:lbkGXX/DHKdomaSV34eiOC3pAr1HRNa9ffOYh7U7b1U=
-github.com/jfrog/jfrog-cli-core/v2 v2.22.0 h1:wJCChrzWTZX8+4aEbZILG4gk2QJebzk7K2pMQX1mADk=
-github.com/jfrog/jfrog-cli-core/v2 v2.22.0/go.mod h1:f0DOcqAVFtfVMDCkucOAfmM3aftpmii8UBvIW24YtTg=
+github.com/jfrog/jfrog-cli-core/v2 v2.22.1 h1:KfYadxalncVqRfnDzmSADxA/Lhej1y8wY1Vmxel2QUc=
+github.com/jfrog/jfrog-cli-core/v2 v2.22.1/go.mod h1:f0DOcqAVFtfVMDCkucOAfmM3aftpmii8UBvIW24YtTg=
 github.com/jfrog/jfrog-client-go v1.23.4 h1:gEkTfv19BLkNymXOahKNUMOeqINuFn7vXrT/Mp+RFQ0=
 github.com/jfrog/jfrog-client-go v1.23.4/go.mod h1:DXnYD4QXud0IpFI0xkgVe3X8ncsKL/29GcABdb6B8yY=
 github.com/jpillora/backoff v1.0.0/go.mod h1:J/6gKK9jxlEcS3zixgDgUAsiuZ7yrSoa/FX5e0EB2j4=
