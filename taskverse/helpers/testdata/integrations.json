@@ -1,0 +1,30 @@
+[
+  {
+    "propertyBag": {},
+    "permissions": {
+      "allowAllPipelineSources": true
+    },
+    "id": 1,
+    "name": "integration",
+    "projectId": 1,
+    "masterIntegrationId": 1,
+    "masterIntegrationType": "generic",
+    "masterIntegrationName": "generic",
+    "providerId": null,
+    "environments": null,
+    "isInternal": false,
+    "createdByUserName": "user",
+    "updatedByUserName": "user",
+    "createdBy": 1,
+    "updatedBy": 1,
+    "accessResourceNamePrefix": "",
+    "createdAt": "2023-01-01T12:00:00.000Z",
+    "updatedAt": "2023-01-01T12:00:00.000Z",
+    "formJSONValues": [
+      {
+        "label": "key",
+        "value": "value"
+      }
+    ]
+  }
+]

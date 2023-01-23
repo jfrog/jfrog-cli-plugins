@@ -1,0 +1,23 @@
+# IDEs
+.idea
+.vscode
+*.iml
+
+# Test files
+tmp
+out
+bin
+dist
+devenv
+scripts
+
+# Plugin executable
+taskverse
+
+# Vim
+*~
+*.swp
+
+# IOS
+*.DS_Store
+
