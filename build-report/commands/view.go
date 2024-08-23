@@ -2,8 +2,9 @@ package commands
 
 import (
 	"errors"
-	"github.com/jfrog/build-info-go/entities"
 	"os"
+
+	"github.com/jfrog/build-info-go/entities"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -12,7 +13,7 @@ import (
 	"github.com/jfrog/jfrog-cli-core/v2/utils/coreutils"
 	"github.com/jfrog/jfrog-cli-plugins/build-report/utils"
 	"github.com/jfrog/jfrog-client-go/utils/log"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 func GetViewCommand() components.Command {
@@ -23,9 +24,7 @@ func GetViewCommand() components.Command {
 		Arguments:   getViewArguments(),
 		Flags:       getViewFlags(),
 		EnvVars:     getViewEnvVar(),
-		Action: func(c *components.Context) error {
-			return viewCmd(c)
-		},
+		Action:      viewCmd,
 	}
 }
 
@@ -49,15 +48,9 @@ func getViewArguments() []components.Argument {
 
 func getViewFlags() []components.Flag {
 	return []components.Flag{
-		components.StringFlag{
-			Name:        utils.ServerIdFlag,
-			Description: "Artifactory server ID configured using the config command.",
-		},
-		components.StringFlag{
-			Name: diffFlag,
-			Description: "A build number to show diff with. " +
-				"Renders the table to show difference in artifacts, dependencies and properties with the provided build number.",
-		},
+		components.NewStringFlag(utils.ServerIdFlag, "Artifactory server ID configured using the config command."),
+		components.NewStringFlag(diffFlag, "A build number to show diff with. "+
+			"Renders the table to show difference in artifacts, dependencies and properties with the provided build number."),
 	}
 }
 
@@ -186,7 +179,7 @@ func printModulesDiffTable(diff *utils.BuildDiff) {
 		{Name: "Art/Dep", Mode: table.Asc}})
 
 	// Color lines only if terminal.
-	if isTerminal() {
+	if log.IsStdOutTerminal() {
 		// Colors each line according to the change of the file.
 		t.SetRowPainter(func(row table.Row) text.Colors {
 			switch row[len(modulesDiffHeader)-1] {
@@ -269,15 +262,11 @@ func renderWithDefaults(t table.Writer) {
 	t.Render()
 }
 
-// Check if Stdout is a terminal
-func isTerminal() bool {
-	return terminal.IsTerminal(int(os.Stdout.Fd()))
-}
-
 // Setting the row limit according to terminal, or default if cannot detect.
 func limitRowLength(t table.Writer) {
-	if isTerminal() {
-		width, _, err := terminal.GetSize(int(os.Stdout.Fd()))
+	if log.IsStdOutTerminal() {
+		// #nosec G115 - The file descriptor is not expected to exceed the maximum integer value
+		width, _, err := term.GetSize(int(os.Stdout.Fd()))
 		if err != nil {
 			log.Debug("Error when trying to get terminal width. Setting table limit to default. Error: ", err.Error())
 			t.SetAllowedRowLength(defaultRowLengthLimit)

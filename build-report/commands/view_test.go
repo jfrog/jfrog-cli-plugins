@@ -2,14 +2,15 @@ package commands
 
 import (
 	"encoding/json"
+	"os"
+	"path/filepath"
+	"testing"
+
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jfrog/build-info-go/entities"
 	"github.com/jfrog/jfrog-cli-plugins/build-report/utils"
 	"github.com/jfrog/jfrog-cli-plugins/build-report/utils/tests"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"path/filepath"
-	"testing"
 )
 
 func TestBuildDetailsTableHasConstantLength(t *testing.T) {
@@ -64,7 +65,7 @@ func TestBuildModulesTableHasConstantLength(t *testing.T) {
 func TestModulesDiffTableHasConstantLength(t *testing.T) {
 	tests.LinesSameWidth = true
 
-	buildDiffJson, err := ioutil.ReadFile(filepath.Join("..", "testdata", "diff.json"))
+	buildDiffJson, err := os.ReadFile(filepath.Join("..", "testdata", "diff.json"))
 	if err != nil {
 		assert.NoError(t, err)
 		return

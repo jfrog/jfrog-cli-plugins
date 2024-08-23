@@ -2,7 +2,6 @@ package commands
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -11,26 +10,6 @@ import (
 	"github.com/jfrog/jfrog-client-go/utils/io/content"
 	"github.com/stretchr/testify/assert"
 )
-
-var trimPrefixProvider = []struct {
-	pattern  string
-	path     string
-	expected string
-}{
-	{"abc", "abc", "abc"},
-	{"abc", "abc/def", "def"},
-	{"abc/", "abc/def", "def"},
-	{"abc/def", "abc/def", "def"},
-	{"abc/def/", "abc/def", "def"},
-}
-
-func TestTrimPrefixFromPath(t *testing.T) {
-	for _, triple := range trimPrefixProvider {
-		t.Run(fmt.Sprintf("%v", triple), func(t *testing.T) {
-			assert.Equal(t, triple.expected, trimFoldersFromPath(triple.pattern, triple.path))
-		})
-	}
-}
 
 var processSearchResultsProvider = []struct {
 	sampleName    string
@@ -53,7 +32,7 @@ func TestProcessSearchResults(t *testing.T) {
 			contentReader := content.NewContentReader(filePath, "results")
 			searchResults.SetReader(contentReader)
 			assert.NoError(t, checkSearchResults(contentReader, sample.searchPattern))
-			actualResults, actualMaxPath, err := processSearchResults(sample.searchPattern, searchResults.Reader())
+			actualResults, actualMaxPath, err := processSearchResults(searchResults.Reader())
 			assert.NoError(t, err)
 			assert.Equal(t, sample.maxPathLength, actualMaxPath)
 			for i := range sample.expectedPaths {
@@ -104,13 +83,13 @@ func prepareSample(t *testing.T, fileName string) string {
 	dir, err := os.Getwd()
 	assert.NoError(t, err)
 	source := filepath.Join(dir, "testdata", fileName)
-	data, err := ioutil.ReadFile(source)
+	data, err := os.ReadFile(source)
 	assert.NoError(t, err)
 
 	// Write sample to a temp file
-	dest, err := ioutil.TempFile("", fileName)
+	dest, err := os.CreateTemp("", fileName)
 	assert.NoError(t, err)
-	err = ioutil.WriteFile(dest.Name(), data, 0644)
+	err = os.WriteFile(dest.Name(), data, 0600)
 	assert.NoError(t, err)
 	return dest.Name()
 }

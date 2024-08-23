@@ -2,15 +2,16 @@ package utils
 
 import (
 	"encoding/json"
-	"github.com/jfrog/build-info-go/entities"
-	"github.com/stretchr/testify/assert"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/jfrog/build-info-go/entities"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBuildDiffStruct(t *testing.T) {
-	buildDiffJson, err := ioutil.ReadFile(filepath.Join("..", "testdata", "diff.json"))
+	buildDiffJson, err := os.ReadFile(filepath.Join("..", "testdata", "diff.json"))
 	if err != nil {
 		assert.NoError(t, err)
 		return

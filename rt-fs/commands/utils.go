@@ -27,10 +27,7 @@ func getCommonArguments() []components.Argument {
 
 func getCommonFlags() []components.Flag {
 	return []components.Flag{
-		components.StringFlag{
-			Name:        "server-id",
-			Description: "Artifactory server ID configured using the config command.",
-		},
+		components.NewStringFlag("server-id", "Artifactory server ID configured using the config command."),
 	}
 }
 
@@ -61,10 +58,10 @@ func createCommonConfiguration(c *components.Context) (*commonConfiguration, err
 
 func checkInputs(c *components.Context) error {
 	if len(c.Arguments) != 1 {
-		return errors.New("Wrong number of arguments. Expected: 1, " + "Received: " + strconv.Itoa(len(c.Arguments)))
+		return errors.New("wrong number of arguments. Expected: 1, " + "Received: " + strconv.Itoa(len(c.Arguments)))
 	}
 	if strings.Contains(c.Arguments[0], "*") {
-		return errors.New("Wildcards are not supported in paths.")
+		return errors.New("wildcards are not supported in paths")
 	}
 	return nil
 }
@@ -76,7 +73,7 @@ func getRtDetails(c *components.Context) (*config.ServerDetails, error) {
 		return nil, err
 	}
 	if details.ArtifactoryUrl == "" {
-		return nil, errors.New("no server-id was found, or the server-id has no Artifactory url.")
+		return nil, errors.New("no server-id was found, or the server-id has no Artifactory url")
 	}
 	details.ArtifactoryUrl = clientutils.AddTrailingSlashIfNeeded(details.ArtifactoryUrl)
 	err = config.CreateInitialRefreshableTokensIfNeeded(details)
@@ -128,7 +125,7 @@ func increaseLogLevel() {
 }
 
 // Trim the pattern from path.
-func trimFoldersFromPath(pattern, path string) string {
+func trimFoldersFromPath(path string) string {
 	lastSlash := strings.LastIndex(path, "/")
 	if lastSlash == -1 {
 		return path

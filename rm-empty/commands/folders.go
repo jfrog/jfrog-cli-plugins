@@ -2,6 +2,9 @@ package commands
 
 import (
 	"errors"
+	"strconv"
+	"strings"
+
 	"github.com/jfrog/jfrog-cli-core/v2/artifactory/utils"
 	"github.com/jfrog/jfrog-cli-core/v2/common/commands"
 	"github.com/jfrog/jfrog-cli-core/v2/common/spec"
@@ -10,8 +13,6 @@ import (
 	clientutils "github.com/jfrog/jfrog-client-go/utils"
 	"github.com/jfrog/jfrog-client-go/utils/io/content"
 	"github.com/jfrog/jfrog-client-go/utils/log"
-	"strconv"
-	"strings"
 
 	"github.com/jfrog/jfrog-cli-core/v2/artifactory/commands/generic"
 	"github.com/jfrog/jfrog-cli-core/v2/plugins/components"
@@ -27,9 +28,7 @@ func GetCleanCommand() components.Command {
 		Arguments:   getArguments(),
 		Flags:       getFlags(),
 		EnvVars:     getEnvVars(),
-		Action: func(c *components.Context) error {
-			return foldersCmd(c)
-		},
+		Action:      foldersCmd,
 	}
 }
 
@@ -44,15 +43,8 @@ func getArguments() []components.Argument {
 
 func getFlags() []components.Flag {
 	return []components.Flag{
-		components.StringFlag{
-			Name:        "server-id",
-			Description: "Artifactory server ID configured using the config command",
-		},
-		components.BoolFlag{
-			Name:         "quiet",
-			Description:  "Skip the delete confirmation message",
-			DefaultValue: false,
-		},
+		components.NewStringFlag("server-id", "Artifactory server ID configured using the config command"),
+		components.NewBoolFlag("quiet", "Skip the delete confirmation message"),
 	}
 }
 
@@ -64,7 +56,7 @@ func getEnvVars() []components.EnvVar {
 
 func foldersCmd(c *components.Context) error {
 	if len(c.Arguments) != 1 {
-		return errors.New("Wrong number of arguments. Expected: 1, " + "Received: " + strconv.Itoa(len(c.Arguments)))
+		return errors.New("wrong number of arguments. Expected: 1, " + "Received: " + strconv.Itoa(len(c.Arguments)))
 	}
 
 	rtDetails, err := getRtDetails(c)
@@ -156,11 +148,12 @@ func deleteEmptyFolders(rtDetails *config.ServerDetails, path string, quiet bool
 }
 
 func logEmptyFoldersFound(totalFound int) {
-	if totalFound == 0 {
+	switch totalFound {
+	case 0:
 		log.Info("Found no empty folders.")
-	} else if totalFound == 1 {
+	case 1:
 		log.Info("Found 1 empty folder.")
-	} else {
+	default:
 		log.Info("Found", totalFound, "empty folders.")
 	}
 }

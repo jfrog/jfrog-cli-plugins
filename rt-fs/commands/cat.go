@@ -3,12 +3,12 @@ package commands
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
 	"github.com/jfrog/jfrog-cli-core/v2/artifactory/commands/generic"
 	"github.com/jfrog/jfrog-cli-core/v2/artifactory/utils"
+	"github.com/jfrog/jfrog-cli-core/v2/common/build"
 	"github.com/jfrog/jfrog-cli-core/v2/common/commands"
 	"github.com/jfrog/jfrog-cli-core/v2/common/spec"
 	clientutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
@@ -28,9 +28,7 @@ func GetCatCommand() components.Command {
 		Description: "Run cat.",
 		Arguments:   getCommonArguments(),
 		Flags:       getCommonFlags(),
-		Action: func(c *components.Context) error {
-			return catCmd(c)
-		},
+		Action:      catCmd,
 	}
 }
 
@@ -49,7 +47,7 @@ func catCmd(c *components.Context) error {
 
 func doCat(c *commonConfiguration) error {
 	// Create a temporary file for the download results
-	target, err := ioutil.TempFile("", "rt-fs-cat")
+	target, err := os.CreateTemp("", "rt-fs-cat")
 	if err != nil {
 		return err
 	}
@@ -59,7 +57,7 @@ func doCat(c *commonConfiguration) error {
 	defer os.Remove(target.Name())
 
 	// Download file
-	downloadCmd := generic.NewDownloadCommand().SetConfiguration(createDownloadConfiguration()).SetBuildConfiguration(new(utils.BuildConfiguration))
+	downloadCmd := generic.NewDownloadCommand().SetConfiguration(createDownloadConfiguration()).SetBuildConfiguration(new(build.BuildConfiguration))
 	downloadCmd.SetServerDetails(c.details).SetSpec(createDownloadSpec(c, target.Name()))
 	if err := commands.Exec(downloadCmd); err != nil {
 		return err
@@ -71,7 +69,7 @@ func doCat(c *commonConfiguration) error {
 	}
 
 	// Print results
-	bytes, err := ioutil.ReadFile(target.Name())
+	bytes, err := os.ReadFile(target.Name())
 	if err != nil {
 		return err
 	}

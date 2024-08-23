@@ -3,21 +3,20 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jfrog/jfrog-client-go/utils/io/fileutils"
-	"github.com/stretchr/testify/assert"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/jfrog/jfrog-client-go/utils/io/fileutils"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestValidateSpecPath(t *testing.T) {
 	// Create temp workdir.
-	tempDirPath, err := fileutils.CreateTempDir()
-	assert.NoError(t, err)
-	defer fileutils.RemoveTempDir(tempDirPath)
+	tempDirPath := t.TempDir()
 
 	// Expect error when path is a directory.
-	err = validateSpecPath(tempDirPath + string(filepath.Separator))
+	err := validateSpecPath(tempDirPath + string(filepath.Separator))
 	assert.Error(t, err)
 
 	// Expect no error.
@@ -25,7 +24,7 @@ func TestValidateSpecPath(t *testing.T) {
 	assert.NoError(t, err)
 
 	// Expect error when file already exists.
-	err = ioutil.WriteFile(filepath.Join(tempDirPath, "filespec-test"), []byte("This is test file content."), 0644)
+	err = os.WriteFile(filepath.Join(tempDirPath, "filespec-test"), []byte("This is test file content."), 0600)
 	assert.NoError(t, err)
 	err = validateSpecPath(filepath.Join(tempDirPath, "filespec-test"))
 	assert.Error(t, err)
@@ -35,13 +34,11 @@ func TestHandleResult(t *testing.T) {
 	contentToWrite := []byte("This is the result content.")
 
 	// Create temp workdir.
-	tempDirPath, err := fileutils.CreateTempDir()
-	assert.NoError(t, err)
-	defer fileutils.RemoveTempDir(tempDirPath)
+	tempDirPath := t.TempDir()
 	filePath := filepath.Join(tempDirPath, "filespec-test")
 
 	// Test output to file.
-	err = handleResult(contentToWrite, filePath)
+	err := handleResult(contentToWrite, filePath)
 	assert.NoError(t, err)
 	actualContent, err := fileutils.ReadFile(filePath)
 	assert.NoError(t, err)

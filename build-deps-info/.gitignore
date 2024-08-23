@@ -1,18 +1,2 @@
- IDEs
-.idea
-.vscode
-*.iml
-
-# Test files
-tmp
-out
-
-# Template executable
+# Executable
 build-deps-info
-
-# Vim
-*~
-*.swp
-
-# IOS
-*.DS_Store
