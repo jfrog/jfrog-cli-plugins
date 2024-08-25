@@ -50,7 +50,9 @@ func TestFilterEmptyFolders(t *testing.T) {
 
 	// Run the filterEmptyFolders function, which writes all the empty folders in sortedResultsReader
 	// into emptyFoldersWriter.
-	filterEmptyFolders(sortedResultsReader, emptyFoldersWriter)
+	totalFound, err := filterEmptyFolders(sortedResultsReader, emptyFoldersWriter)
+	assert.Equal(t, 2, totalFound)
+	assert.NoError(t, err)
 
 	// Close the writer now, so that we can read its content using a reader.
 	assert.NoError(t, emptyFoldersWriter.Close())
@@ -95,38 +97,17 @@ func assertEmptyFolders(t *testing.T, actualEmptyFoldersReader *content.ContentR
 
 func getTestItems() []clientrtutils.ResultItem {
 	return []clientrtutils.ResultItem{
-		clientrtutils.ResultItem{
-			Path: "a/b",
-			Type: "folder",
-		},
-		clientrtutils.ResultItem{
-			Path: "a/b/c",
-			Type: "folder",
-		},
-		clientrtutils.ResultItem{
-			Path: "a/b/c/d",
-			Type: "folder",
-		},
-		clientrtutils.ResultItem{
-			Path: "a/b/c/a.zip",
-			Type: "file",
-		},
-		clientrtutils.ResultItem{
-			Path: "a/b/1",
-			Type: "folder",
-		},
+		{Path: "a/b", Type: "folder"},
+		{Path: "a/b/c", Type: "folder"},
+		{Path: "a/b/c/d", Type: "folder"},
+		{Path: "a/b/c/a.zip", Type: "file"},
+		{Path: "a/b/1", Type: "folder"},
 	}
 }
 
 func getTestEmptyFolders() []clientrtutils.ResultItem {
 	return []clientrtutils.ResultItem{
-		clientrtutils.ResultItem{
-			Path: "a/b/1",
-			Type: "folder",
-		},
-		clientrtutils.ResultItem{
-			Path: "a/b/c/d",
-			Type: "folder",
-		},
+		{Path: "a/b/1", Type: "folder"},
+		{Path: "a/b/c/d", Type: "folder"},
 	}
 }

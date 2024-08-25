@@ -3,14 +3,15 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"github.com/jfrog/build-info-go/entities"
-	"github.com/jfrog/jfrog-cli-core/v2/utils/config"
-	servicesutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
-	"github.com/jfrog/jfrog-client-go/http/jfroghttpclient"
-	clientutils "github.com/jfrog/jfrog-client-go/utils"
-	"github.com/jfrog/jfrog-client-go/utils/log"
 	"net/http"
 	"path"
+
+	"github.com/jfrog/build-info-go/entities"
+	"github.com/jfrog/jfrog-cli-core/v2/utils/config"
+	"github.com/jfrog/jfrog-client-go/http/jfroghttpclient"
+	"github.com/jfrog/jfrog-client-go/utils"
+	clientutils "github.com/jfrog/jfrog-client-go/utils"
+	"github.com/jfrog/jfrog-client-go/utils/log"
 )
 
 // Get builds diff from Artifactory.
@@ -31,7 +32,10 @@ func GetBuildDiff(rtDetails *config.ServerDetails, buildName, buildNumber, build
 
 	restApi := path.Join("api", "build", buildName, buildNumber)
 	params := map[string]string{"diff": buildNumberDiff}
-	requestFullUrl, err := servicesutils.BuildArtifactoryUrl(artAuth.GetUrl(), restApi, params)
+	requestFullUrl, err := utils.BuildUrl(artAuth.GetUrl(), restApi, params)
+	if err != nil {
+		return nil, err
+	}
 	log.Debug("Getting build-info diff from: ", requestFullUrl)
 
 	resp, body, _, err := client.SendGet(requestFullUrl, true, &httpClientsDetails)
@@ -39,7 +43,7 @@ func GetBuildDiff(rtDetails *config.ServerDetails, buildName, buildNumber, build
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New("Artifactory response: " + resp.Status + "\n" + clientutils.IndentJson(body))
+		return nil, errors.New("artifactory response: " + resp.Status + "\n" + clientutils.IndentJson(body))
 	}
 
 	var buildDiff BuildDiff

@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/c-bata/go-prompt"
-	corecommandutils "github.com/jfrog/jfrog-cli-core/v2/artifactory/commands/utils"
-	"github.com/jfrog/jfrog-cli-core/v2/plugins/components"
-	"github.com/jfrog/jfrog-cli-core/v2/utils/coreutils"
-	clientutils "github.com/jfrog/jfrog-client-go/utils"
-	"github.com/jfrog/jfrog-client-go/utils/io/fileutils"
-	"github.com/jfrog/jfrog-client-go/utils/log"
-	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
+
+	"github.com/c-bata/go-prompt"
+	"github.com/jfrog/jfrog-cli-core/v2/plugins/components"
+	"github.com/jfrog/jfrog-cli-core/v2/utils/coreutils"
+	"github.com/jfrog/jfrog-cli-core/v2/utils/ioutils"
+	clientutils "github.com/jfrog/jfrog-client-go/utils"
+	"github.com/jfrog/jfrog-client-go/utils/io/fileutils"
+	"github.com/jfrog/jfrog-client-go/utils/log"
 )
 
 const (
@@ -62,18 +62,13 @@ func GetFileSpecGenCommand() components.Command {
 		Description: "Generates a file-spec json.",
 		Aliases:     []string{"cr"},
 		Flags:       getCreateFlags(),
-		Action: func(c *components.Context) error {
-			return Run(c)
-		},
+		Action:      Run,
 	}
 }
 
 func getCreateFlags() []components.Flag {
 	return []components.Flag{
-		components.StringFlag{
-			Name:        "file",
-			Description: "Output generated file-spec to file.",
-		},
+		components.NewStringFlag("file", "Output generated file-spec to file."),
 	}
 }
 
@@ -109,7 +104,7 @@ func handleResult(output []byte, file string) error {
 		return nil
 	}
 
-	if err := ioutil.WriteFile(file, []byte(outputJson), 0644); err != nil {
+	if err := os.WriteFile(file, []byte(outputJson), 0600); err != nil {
 		return err
 	}
 	log.Info(fmt.Sprintf("file-spec successfully created at %s", file))
@@ -148,7 +143,7 @@ func doQuestionnaire() ([]specslicetype, error) {
 	var resultSlice []specslicetype
 
 	// Ask for first spec.
-	fileSpecQuestionnaire := &corecommandutils.InteractiveQuestionnaire{
+	fileSpecQuestionnaire := &ioutils.InteractiveQuestionnaire{
 		MandatoryQuestionsKeys: []string{SpecCommand},
 		QuestionsMap:           questionMap,
 	}
@@ -166,7 +161,7 @@ func doQuestionnaire() ([]specslicetype, error) {
 		// Create a new questionnaire, use the same command as previous file-spec.
 		// Meaning - if previous file-spec is used for search, each additional file-spec should be
 		// for searching as well.
-		fileSpecQuestionnaire = &corecommandutils.InteractiveQuestionnaire{
+		fileSpecQuestionnaire = &ioutils.InteractiveQuestionnaire{
 			MandatoryQuestionsKeys: []string{},
 			QuestionsMap:           questionMap,
 		}
@@ -208,7 +203,7 @@ func buildFileSpecJson(resultSlice []specslicetype) ([]byte, error) {
 }
 
 // Add required questions based on the spec purpose.
-func specCommandCallback(iq *corecommandutils.InteractiveQuestionnaire, specCommand string) (string, error) {
+func specCommandCallback(iq *ioutils.InteractiveQuestionnaire, specCommand string) (string, error) {
 	// Each SpecType has its own mandatory and optional configuration keys.
 	// We set the questionnaire's keys according to the selected value.
 	switch specCommand {
@@ -220,7 +215,7 @@ func specCommandCallback(iq *corecommandutils.InteractiveQuestionnaire, specComm
 	case Move, Copy:
 		iq.MandatoryQuestionsKeys = append(iq.MandatoryQuestionsKeys, SpecType, Target)
 	default:
-		return "", errors.New(fmt.Sprintf("unsupported %s was configured", SpecCommand))
+		return "", fmt.Errorf("unsupported %s was configured", SpecCommand)
 	}
 
 	// Update fileSpecsCommand only on the first questionnaire.
@@ -231,34 +226,39 @@ func specCommandCallback(iq *corecommandutils.InteractiveQuestionnaire, specComm
 }
 
 // Add required questions for Pattern/ Aql file-spec according to file-spec command.
-func specTypeCallback(iq *corecommandutils.InteractiveQuestionnaire, specType string) (string, error) {
+func specTypeCallback(iq *ioutils.InteractiveQuestionnaire, specType string) (string, error) {
 	// Each SpecType has its own optional configuration keys.
 	// We set the questionnaire's optionalKeys suggests according to the selected value.
 	if _, ok := iq.AnswersMap[SpecCommand]; !ok {
 		if fileSpecsCommand == "" {
 			// If fileSpecsCommand is empty, this is the first questionnaire run and the AnswerMap must contain
 			// a spec-command.
-			return "", errors.New(fmt.Sprintf("%s is missing in configuration map", SpecCommand))
+			return "", fmt.Errorf("%s is missing in configuration map", SpecCommand)
 		}
 		// This is not the first run, populate the AnswerMap for further execution.
 		iq.AnswersMap[SpecCommand] = fileSpecsCommand
 	}
 
+	commandType, ok := iq.AnswersMap[SpecCommand].(string)
+	if !ok {
+		return "", errors.New("invalid command type for: " + commandType)
+	}
+
 	switch specType {
 	case Pattern:
-		iq.MandatoryQuestionsKeys = append(iq.MandatoryQuestionsKeys, getPatternMandatoryConf(iq.AnswersMap[SpecCommand].(string))...)
-		iq.OptionalKeysSuggests = append(iq.OptionalKeysSuggests, getPatternOptionalConf(iq.AnswersMap[SpecCommand].(string))...)
+		iq.MandatoryQuestionsKeys = append(iq.MandatoryQuestionsKeys, getPatternMandatoryConf(commandType)...)
+		iq.OptionalKeysSuggests = append(iq.OptionalKeysSuggests, getPatternOptionalConf(commandType)...)
 	case Aql:
-		iq.MandatoryQuestionsKeys = append(iq.MandatoryQuestionsKeys, getAqlMandatoryConf(iq.AnswersMap[SpecCommand].(string))...)
-		iq.OptionalKeysSuggests = append(iq.OptionalKeysSuggests, getAqlOptionalConf(iq.AnswersMap[SpecCommand].(string))...)
+		iq.MandatoryQuestionsKeys = append(iq.MandatoryQuestionsKeys, getAqlMandatoryConf(commandType)...)
+		iq.OptionalKeysSuggests = append(iq.OptionalKeysSuggests, getAqlOptionalConf(commandType)...)
 	case Build:
-		iq.MandatoryQuestionsKeys = append(iq.MandatoryQuestionsKeys, getBuildMandatoryConf(iq.AnswersMap[SpecCommand].(string))...)
-		iq.OptionalKeysSuggests = append(iq.OptionalKeysSuggests, getBuildBundleOptionalConf(iq.AnswersMap[SpecCommand].(string))...)
+		iq.MandatoryQuestionsKeys = append(iq.MandatoryQuestionsKeys, getBuildMandatoryConf(commandType)...)
+		iq.OptionalKeysSuggests = append(iq.OptionalKeysSuggests, getBuildBundleOptionalConf(commandType)...)
 	case Bundle:
-		iq.MandatoryQuestionsKeys = append(iq.MandatoryQuestionsKeys, getBundleMandatoryConf(iq.AnswersMap[SpecCommand].(string))...)
-		iq.OptionalKeysSuggests = append(iq.OptionalKeysSuggests, getBuildBundleOptionalConf(iq.AnswersMap[SpecCommand].(string))...)
+		iq.MandatoryQuestionsKeys = append(iq.MandatoryQuestionsKeys, getBundleMandatoryConf(commandType)...)
+		iq.OptionalKeysSuggests = append(iq.OptionalKeysSuggests, getBuildBundleOptionalConf(commandType)...)
 	default:
-		return "", errors.New(fmt.Sprintf("unsupported %s was configured", SpecType))
+		return "", fmt.Errorf("unsupported %s was configured", SpecType)
 	}
 
 	// Clean specType value from final configuration
@@ -269,15 +269,15 @@ func specTypeCallback(iq *corecommandutils.InteractiveQuestionnaire, specType st
 	return "", nil
 }
 
-func optionalKeyCallback(iq *corecommandutils.InteractiveQuestionnaire, key string) (value string, err error) {
-	if key != corecommandutils.SaveAndExit {
+func optionalKeyCallback(iq *ioutils.InteractiveQuestionnaire, key string) (value string, err error) {
+	if key != ioutils.SaveAndExit {
 		valueQuestion := iq.QuestionsMap[key]
 		valueQuestion.MapKey = key
 		// If prompt-prefix wasn't provided, use a default prompt.
 		if valueQuestion.PromptPrefix == "" {
-			valueQuestion.PromptPrefix = corecommandutils.InsertValuePromptMsg + key
+			valueQuestion.PromptPrefix = "Insert the value for " + key
 			if valueQuestion.Options != nil {
-				valueQuestion.PromptPrefix += corecommandutils.PressTabMsg
+				valueQuestion.PromptPrefix += ioutils.PressTabMsg
 			}
 			valueQuestion.PromptPrefix += " >"
 		}
@@ -296,7 +296,7 @@ func getPatternMandatoryConf(commandType string) []string {
 }
 
 func getPatternOptionalConf(commandType string) []prompt.Suggest {
-	optionalKeys := []string{corecommandutils.SaveAndExit}
+	optionalKeys := []string{ioutils.SaveAndExit}
 	switch commandType {
 	case Search, Delete, SetProps:
 		optionalKeys = append(optionalKeys, SearchPatternOptionalKeys...)
@@ -305,7 +305,7 @@ func getPatternOptionalConf(commandType string) []prompt.Suggest {
 	case Move, Copy:
 		optionalKeys = append(optionalKeys, MoveCopyPatternOptionalKeys...)
 	}
-	return corecommandutils.GetSuggestsFromKeys(optionalKeys, OptionalSuggestsMap)
+	return ioutils.GetSuggestsFromKeys(optionalKeys, OptionalSuggestsMap)
 }
 
 func getAqlMandatoryConf(commandType string) []string {
@@ -318,7 +318,7 @@ func getAqlMandatoryConf(commandType string) []string {
 }
 
 func getAqlOptionalConf(commandType string) []prompt.Suggest {
-	optionalKeys := []string{corecommandutils.SaveAndExit}
+	optionalKeys := []string{ioutils.SaveAndExit}
 	switch commandType {
 	case Search, Delete, SetProps:
 		optionalKeys = append(optionalKeys, SearchAqlOptionalKeys...)
@@ -327,7 +327,7 @@ func getAqlOptionalConf(commandType string) []prompt.Suggest {
 	case Move, Copy:
 		optionalKeys = append(optionalKeys, MoveCopyAqlOptionalKeys...)
 	}
-	return corecommandutils.GetSuggestsFromKeys(optionalKeys, OptionalSuggestsMap)
+	return ioutils.GetSuggestsFromKeys(optionalKeys, OptionalSuggestsMap)
 }
 
 func getBuildMandatoryConf(commandType string) []string {
@@ -349,7 +349,7 @@ func getBundleMandatoryConf(commandType string) []string {
 }
 
 func getBuildBundleOptionalConf(commandType string) []prompt.Suggest {
-	optionalKeys := []string{corecommandutils.SaveAndExit}
+	optionalKeys := []string{ioutils.SaveAndExit}
 	switch commandType {
 	case Search, Delete, SetProps:
 		optionalKeys = append(optionalKeys, SearchBuildBundleOptionalKeys...)
@@ -358,17 +358,17 @@ func getBuildBundleOptionalConf(commandType string) []prompt.Suggest {
 	case Move, Copy:
 		optionalKeys = append(optionalKeys, MoveCopyBuildBundleOptionalKeys...)
 	}
-	return corecommandutils.GetSuggestsFromKeys(optionalKeys, OptionalSuggestsMap)
+	return ioutils.GetSuggestsFromKeys(optionalKeys, OptionalSuggestsMap)
 }
 
 func getUploadOptionalConf() []prompt.Suggest {
-	optionalKeys := []string{corecommandutils.SaveAndExit}
+	optionalKeys := []string{ioutils.SaveAndExit}
 	optionalKeys = append(optionalKeys, UploadOptionalKeys...)
-	return corecommandutils.GetSuggestsFromKeys(optionalKeys, OptionalSuggestsMap)
+	return ioutils.GetSuggestsFromKeys(optionalKeys, OptionalSuggestsMap)
 }
 
-var questionMap = map[string]corecommandutils.QuestionInfo{
-	corecommandutils.OptionalKey: {
+var questionMap = map[string]ioutils.QuestionInfo{
+	ioutils.OptionalKey: {
 		PromptPrefix: "Select the next property >",
 		AllowVars:    false,
 		Writer:       nil,
@@ -385,9 +385,9 @@ var questionMap = map[string]corecommandutils.QuestionInfo{
 			{Text: Delete, Description: "Delete file-spec"},
 			{Text: SetProps, Description: "Set-props file-spec"},
 		},
-		PromptPrefix: "Select file-spec purpose" + corecommandutils.PressTabMsg,
+		PromptPrefix: "Select file-spec purpose" + ioutils.PressTabMsg,
 		AllowVars:    false,
-		Writer:       corecommandutils.WriteStringAnswer,
+		Writer:       ioutils.WriteStringAnswer,
 		MapKey:       SpecCommand,
 		Callback:     specCommandCallback,
 	},
@@ -398,73 +398,73 @@ var questionMap = map[string]corecommandutils.QuestionInfo{
 			{Text: Build, Description: "Build based file-spec"},
 			{Text: Bundle, Description: "Bundle based file-spec"},
 		},
-		PromptPrefix: "Select the file-spec type" + corecommandutils.PressTabMsg,
+		PromptPrefix: "Select the file-spec type" + ioutils.PressTabMsg,
 		AllowVars:    false,
-		Writer:       corecommandutils.WriteStringAnswer,
+		Writer:       ioutils.WriteStringAnswer,
 		MapKey:       SpecType,
 		Callback:     specTypeCallback,
 	},
 	Pattern: {
 		PromptPrefix: "Insert the pattern >",
 		AllowVars:    false,
-		Writer:       corecommandutils.WriteStringAnswer,
+		Writer:       ioutils.WriteStringAnswer,
 		MapKey:       Pattern,
 		Callback:     nil,
 	},
 	Aql: {
 		PromptPrefix: "Insert the aql >",
 		AllowVars:    false,
-		Writer:       corecommandutils.WriteStringAnswer,
+		Writer:       ioutils.WriteStringAnswer,
 		MapKey:       Aql,
 		Callback:     nil,
 	},
 	Target: {
 		PromptPrefix: "Insert the target >",
 		AllowVars:    false,
-		Writer:       corecommandutils.WriteStringAnswer,
+		Writer:       ioutils.WriteStringAnswer,
 		MapKey:       Target,
 		Callback:     nil,
 	},
 	Props: {
 		PromptPrefix: "Enter \"key=value\" pairs separated by a semi-colon (key1=value1;key2=value2) >",
 		AllowVars:    false,
-		Writer:       corecommandutils.WriteStringAnswer,
+		Writer:       ioutils.WriteStringAnswer,
 		MapKey:       Props,
 		Callback:     nil,
 	},
 	ExcludeProps: {
 		PromptPrefix: "Enter \"key=value\" pairs separated by a semi-colon (key1=value1;key2=value2) >",
 		AllowVars:    false,
-		Writer:       corecommandutils.WriteStringAnswer,
+		Writer:       ioutils.WriteStringAnswer,
 		MapKey:       ExcludeProps,
 		Callback:     nil,
 	},
 	Recursive: {
-		Options:      corecommandutils.GetBoolSuggests(),
-		PromptPrefix: "Select if recursive" + corecommandutils.PressTabMsg,
+		Options:      ioutils.GetBoolSuggests(),
+		PromptPrefix: "Select if recursive" + ioutils.PressTabMsg,
 		AllowVars:    false,
-		Writer:       corecommandutils.WriteStringAnswer,
+		Writer:       ioutils.WriteStringAnswer,
 		MapKey:       Recursive,
 		Callback:     nil,
 	},
 	Exclusions: {
 		PromptPrefix: "Enter a comma separated list of exclusion patterns >",
 		AllowVars:    false,
-		Writer:       corecommandutils.WriteStringArrayAnswer,
+		Writer:       ioutils.WriteStringArrayAnswer,
 		MapKey:       Exclusions,
 		Callback:     nil,
 	},
 	ArchiveEntries: {
 		PromptPrefix: "Insert archive-entries pattern >",
 		AllowVars:    false,
-		Writer:       corecommandutils.WriteStringAnswer,
+		Writer:       ioutils.WriteStringAnswer,
 		MapKey:       ArchiveEntries,
 		Callback:     nil,
 	},
 	Build: {
 		PromptPrefix: "Insert build pattern >",
 		AllowVars:    false,
-		Writer:       corecommandutils.WriteStringAnswer,
+		Writer:       ioutils.WriteStringAnswer,
 		MapKey:       Build,
 		Callback:     nil,
 	},
@@ -472,14 +472,14 @@ var questionMap = map[string]corecommandutils.QuestionInfo{
 		Msg:          "",
 		PromptPrefix: "Insert bundle >",
 		AllowVars:    false,
-		Writer:       corecommandutils.WriteStringAnswer,
+		Writer:       ioutils.WriteStringAnswer,
 		MapKey:       Bundle,
 		Callback:     nil,
 	},
 	SortBy: {
 		PromptPrefix: "Enter a comma separated list of sort-by values >",
 		AllowVars:    false,
-		Writer:       corecommandutils.WriteStringArrayAnswer,
+		Writer:       ioutils.WriteStringArrayAnswer,
 		MapKey:       SortBy,
 		Callback:     nil,
 	},
@@ -489,63 +489,63 @@ var questionMap = map[string]corecommandutils.QuestionInfo{
 			{Text: Desc, Description: ""},
 		},
 		AllowVars: false,
-		Writer:    corecommandutils.WriteStringAnswer,
+		Writer:    ioutils.WriteStringAnswer,
 		MapKey:    SortOrder,
 		Callback:  nil,
 	},
 	Limit: {
 		AllowVars: false,
-		Writer:    corecommandutils.WriteStringAnswer,
+		Writer:    ioutils.WriteStringAnswer,
 		MapKey:    Limit,
 		Callback:  nil,
 	},
 	Offset: {
 		AllowVars: false,
-		Writer:    corecommandutils.WriteStringAnswer,
+		Writer:    ioutils.WriteStringAnswer,
 		MapKey:    Offset,
 		Callback:  nil,
 	},
 	Flat: {
-		Options:   corecommandutils.GetBoolSuggests(),
+		Options:   ioutils.GetBoolSuggests(),
 		AllowVars: false,
-		Writer:    corecommandutils.WriteStringAnswer,
+		Writer:    ioutils.WriteStringAnswer,
 		MapKey:    Flat,
 		Callback:  nil,
 	},
 	ValidateSymlinks: {
-		Options:      corecommandutils.GetBoolSuggests(),
-		PromptPrefix: "Select if should validate symlinks" + corecommandutils.PressTabMsg,
+		Options:      ioutils.GetBoolSuggests(),
+		PromptPrefix: "Select if should validate symlinks" + ioutils.PressTabMsg,
 		AllowVars:    false,
-		Writer:       corecommandutils.WriteStringAnswer,
+		Writer:       ioutils.WriteStringAnswer,
 		MapKey:       ValidateSymlinks,
 		Callback:     nil,
 	},
 	Regexp: {
-		Options:   corecommandutils.GetBoolSuggests(),
+		Options:   ioutils.GetBoolSuggests(),
 		AllowVars: false,
-		Writer:    corecommandutils.WriteStringAnswer,
+		Writer:    ioutils.WriteStringAnswer,
 		MapKey:    Regexp,
 		Callback:  nil,
 	},
 }
 
 var OptionalSuggestsMap = map[string]prompt.Suggest{
-	corecommandutils.SaveAndExit: {Text: corecommandutils.SaveAndExit},
-	Props:                        {Text: Props},
-	ExcludeProps:                 {Text: ExcludeProps},
-	Target:                       {Text: Target},
-	Recursive:                    {Text: Recursive},
-	Exclusions:                   {Text: Exclusions},
-	ArchiveEntries:               {Text: ArchiveEntries},
-	Build:                        {Text: Build},
-	Bundle:                       {Text: Bundle},
-	SortBy:                       {Text: SortBy},
-	SortOrder:                    {Text: SortOrder},
-	Limit:                        {Text: Limit},
-	Offset:                       {Text: Offset},
-	Flat:                         {Text: Flat},
-	ValidateSymlinks:             {Text: ValidateSymlinks},
-	Regexp:                       {Text: Regexp},
+	ioutils.SaveAndExit: {Text: ioutils.SaveAndExit},
+	Props:               {Text: Props},
+	ExcludeProps:        {Text: ExcludeProps},
+	Target:              {Text: Target},
+	Recursive:           {Text: Recursive},
+	Exclusions:          {Text: Exclusions},
+	ArchiveEntries:      {Text: ArchiveEntries},
+	Build:               {Text: Build},
+	Bundle:              {Text: Bundle},
+	SortBy:              {Text: SortBy},
+	SortOrder:           {Text: SortOrder},
+	Limit:               {Text: Limit},
+	Offset:              {Text: Offset},
+	Flat:                {Text: Flat},
+	ValidateSymlinks:    {Text: ValidateSymlinks},
+	Regexp:              {Text: Regexp},
 }
 
 var SearchPatternOptionalKeys = []string{

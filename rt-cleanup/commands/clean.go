@@ -22,9 +22,7 @@ func GetCleanCommand() components.Command {
 		Arguments:   getCleanArguments(),
 		Flags:       getCleanFlags(),
 		EnvVars:     getCleanEnvVar(),
-		Action: func(c *components.Context) error {
-			return cleanCmd(c)
-		},
+		Action:      cleanCmd,
 	}
 }
 
@@ -39,20 +37,9 @@ func getCleanArguments() []components.Argument {
 
 func getCleanFlags() []components.Flag {
 	return []components.Flag{
-		components.StringFlag{
-			Name:        "server-id",
-			Description: "Artifactory server ID configured using the config command.",
-		},
-		components.StringFlag{
-			Name:         "time-unit",
-			Description:  "The time unit of the no-dl time. year, month and day are the allowed values.",
-			DefaultValue: "month",
-		},
-		components.StringFlag{
-			Name:         "no-dl",
-			Description:  "Artifacts that have not been downloaded or modified for at least no-dl will be deleted.",
-			DefaultValue: "1",
-		},
+		components.NewStringFlag("server-id", "Artifactory server ID configured using the config command."),
+		components.NewStringFlag("time-unit", "The time unit of the no-dl time. year, month and day are the allowed values.", components.WithStrDefaultValue("month")),
+		components.NewStringFlag("no-dl", "Artifacts that have not been downloaded or modified for at least no-dl will be deleted.", components.WithStrDefaultValue("1")),
 	}
 }
 
@@ -69,7 +56,7 @@ type cleanConfiguration struct {
 
 func cleanCmd(c *components.Context) error {
 	if len(c.Arguments) != 1 {
-		return errors.New("Wrong number of arguments. Expected: 1, " + "Received: " + strconv.Itoa(len(c.Arguments)))
+		return errors.New("wrong number of arguments. Expected: 1, " + "Received: " + strconv.Itoa(len(c.Arguments)))
 	}
 	var conf = new(cleanConfiguration)
 	conf.repository = c.Arguments[0]
@@ -152,11 +139,11 @@ func parseTimeFlags(noDownloadedTime, timeUnit string) (timeString string, err e
 	case "day":
 		return timeString + "d", nil
 	}
-	return "", errors.New("Wrong timeUnit arguments. Expected: year, month or day. Received: " + timeUnit)
+	return "", errors.New("wrong timeUnit arguments. Expected: year, month or day. Received: " + timeUnit)
 
 }
 
-/// Returns the Artifactory Details of the provided server-id, or the default one.
+// Returns the Artifactory Details of the provided server-id, or the default one.
 func getRtDetails(c *components.Context) (*config.ServerDetails, error) {
 	serverId := c.GetStringFlagValue("server-id")
 	details, err := commands.GetConfig(serverId, false)

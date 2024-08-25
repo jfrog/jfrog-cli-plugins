@@ -24,9 +24,7 @@ func GetLsCommand() components.Command {
 		Aliases:     []string{"ls, list"},
 		Arguments:   getCommonArguments(),
 		Flags:       getCommonFlags(),
-		Action: func(c *components.Context) error {
-			return lsCmd(c)
-		},
+		Action:      lsCmd,
 	}
 }
 
@@ -48,7 +46,7 @@ func doLs(c *commonConfiguration) error {
 	defer reader.Close()
 
 	// Get structured search results and the path with the max length
-	searchResults, maxPathLength, err := processSearchResults(c.path, reader)
+	searchResults, maxPathLength, err := processSearchResults(reader)
 	if err != nil {
 		return err
 	}
@@ -119,12 +117,12 @@ func printLsResults(searchResults []utils.SearchResult, maxPathLength int) {
 
 // Gets the search results and builds an array of SearchResults.
 // Return also the path with the maximum size.
-func processSearchResults(pattern string, reader *content.ContentReader) ([]utils.SearchResult, int, error) {
+func processSearchResults(reader *content.ContentReader) ([]utils.SearchResult, int, error) {
 	allResults := []utils.SearchResult{}
 	maxPathLength := 0
 	result := new(utils.SearchResult)
 	for i := 0; reader.NextRecord(result) == nil; i++ {
-		result.Path = trimFoldersFromPath(pattern, result.Path)
+		result.Path = trimFoldersFromPath(result.Path)
 		pathLength := len(result.Path)
 		if pathLength > 0 {
 			if pathLength > maxPathLength {

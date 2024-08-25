@@ -67,12 +67,15 @@ func (p *BuildDepsInfo) Exec() error {
 		return err
 	}
 	if !found {
-		return errors.New("Build '" + p.buildName + "/" + p.buildNumber + "' was not found")
+		return errors.New("build '" + p.buildName + "/" + p.buildNumber + "' was not found")
 	}
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Module Id", "Dependency name", "BUILD", "VCS URL"})
 	sha1ToBuildProps, err := getDependenciesDetails(buildinfo.BuildInfo.Modules, p.repository, p.servicesManager)
+	if err != nil {
+		return err
+	}
 	for _, module := range buildinfo.BuildInfo.Modules {
 		for _, dep := range module.Dependencies {
 			depPropsInfo := sha1ToBuildProps[dep.Sha1]
