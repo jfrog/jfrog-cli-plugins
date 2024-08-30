@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	plugins.PluginMain(components.CreateApp("build-deps-info", "v1.2.4", "Print the dependencies build and a link to vcs of a specific build name & build number in Artifactory.",
+	plugins.PluginMain(components.CreateApp("build-deps-info", "v1.2.5", "Print the dependencies build and a link to vcs of a specific build name & build number in Artifactory.",
 		[]components.Command{{
 			Name:        "show",
 			Description: "Show the details of the build dependencies",

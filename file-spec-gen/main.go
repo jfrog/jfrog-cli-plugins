@@ -14,7 +14,7 @@ func getApp() components.App {
 	app := components.App{}
 	app.Name = "file-spec-gen"
 	app.Description = "Generate a file-spec json."
-	app.Version = "v1.0.5"
+	app.Version = "v1.0.6"
 	app.Commands = getCommands()
 	return app
 }
